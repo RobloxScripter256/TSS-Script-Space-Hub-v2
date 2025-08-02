@@ -193,9 +193,10 @@ local Slider = ShipTab:CreateSlider({
 	end,		
 })
 
-local Label = ShipTab:CreateLabel("Kuiper Belt Speed Loop (Value 0 To Stop Loop)", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
+local Label = ShipTab:CreateLabel("Kuiper Belt Speed Loop (Value 0 To Stop Loop)", 4483362458, Color3.fromRGB(0, 0, 0), false) -- Title, Icon, Color, IgnoreTheme
 
 local speedLoopConnection
+local currentSpeedValue = 0 -- Keep track of latest slider value
 
 local Slider = ShipTab:CreateSlider({
 	Name = "Ship Speed",
@@ -205,6 +206,8 @@ local Slider = ShipTab:CreateSlider({
 	CurrentValue = 0,
 	Flag = "Slider5",
 	Callback = function(Value)
+		currentSpeedValue = Value
+
 		local seat = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart
 		local main = seat and seat.Parent and seat.Parent:FindFirstChild("Main")
 		if not main then return end
@@ -212,7 +215,6 @@ local Slider = ShipTab:CreateSlider({
 		local linearVelocity = main:FindFirstChildOfClass("LinearVelocity")
 		if not linearVelocity then return end
 
-		-- Stop loop if value is 0
 		if Value <= 0 then
 			if speedLoopConnection then
 				speedLoopConnection:Disconnect()
@@ -222,12 +224,10 @@ local Slider = ShipTab:CreateSlider({
 			return
 		end
 
-		-- Start loop if not already running
+		-- Start loop if not already started
 		if not speedLoopConnection then
 			speedLoopConnection = game:GetService("RunService").Heartbeat:Connect(function()
-				-- Continuously apply current value as X velocity
-				local v = Slider.Value or Value
-				linearVelocity.VectorVelocity = Vector3.new(v, 0, 0)
+				linearVelocity.VectorVelocity = Vector3.new(currentSpeedValue, 0, 0)
 			end)
 		end
 	end

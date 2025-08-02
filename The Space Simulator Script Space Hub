@@ -570,3 +570,59 @@ AlienESPButton = ESPTab:CreateButton({
 		end
 	end
 })
+
+local toggleConnection
+local espTags = {} -- Track ESPs so we can remove them later
+
+local Toggle = ESPTab:CreateToggle({
+	Name = "Artifact ESP",
+	CurrentValue = false,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		-- Cleanup old ESPs if turning off
+		if not Value then
+			for _, tag in ipairs(espTags) do
+				if tag and tag.Parent then
+					tag:Destroy()
+				end
+			end
+			espTags = {}
+			return
+		end
+
+		-- On toggle ON
+		local planets = workspace:FindFirstChild("Planets")
+		if not planets then return end
+
+		for _, model in ipairs(planets:GetChildren()) do
+			local artifacts = model:FindFirstChild("Artifacts")
+			if artifacts then
+				for _, part in ipairs(artifacts:GetDescendants()) do
+					if part:IsA("BasePart") then
+						local billboard = Instance.new("BillboardGui")
+						billboard.Name = "ArtifactESP"
+						billboard.Size = UDim2.new(0, 100, 0, 30)
+						billboard.StudsOffset = Vector3.new(0, 2, 0)
+						billboard.AlwaysOnTop = true
+						billboard.Adornee = part
+						billboard.Parent = part
+
+						local label = Instance.new("TextLabel")
+						label.AnchorPoint = Vector2.new(0.5, 0.5)
+						label.Position = UDim2.new(0.5, 0, 0.5, 0)
+						label.Size = UDim2.new(1, 0, 1, 0)
+						label.BackgroundTransparency = 1
+						label.Text = part.Name
+						label.TextColor3 = Color3.new(1, 1, 0)
+						label.TextStrokeTransparency = 0.5
+						label.TextScaled = true
+						label.Font = Enum.Font.SourceSansBold
+						label.Parent = billboard
+
+						table.insert(espTags, billboard)
+					end
+				end
+			end
+		end
+	end,
+})

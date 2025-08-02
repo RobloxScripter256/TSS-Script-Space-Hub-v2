@@ -1,521 +1,525 @@
-local Players = game:GetService("Players")
-local SpaceHubGui = Instance.new("ScreenGui")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "Space Hub 🪐",
+	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = "Space Hub",
+	LoadingSubtitle = "by Smiley",
+	ShowText = "The Space Simulator", -- for mobile users to unhide rayfield, change if you'd like
+	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+	ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+	DisableRayfieldPrompts = false,
+	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Big Hub"
+	},
+
+	Discord = {
+		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Untitled",
+		Subtitle = "Key System",
+		Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+})
+
+local ShipTab = Window:CreateTab("Ship", 4483362458) -- Title, Image
+local PlayerTab = Window:CreateTab("LocalPlayer", 4483362458) -- Title, Image
+local ESPTab = Window:CreateTab("ESP", 4483362458) -- Title, Image
+local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
+local OtherTab = Window:CreateTab("Other", 4483362458) -- Title, Image
+
 local RunService = game:GetService("RunService")
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-local MainFrame = Instance.new("Frame")
-local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
-local UICorner = Instance.new("UICorner")
-local UpperFrame = Instance.new("Frame")
-local UICorner1 = Instance.new("UICorner")
-local Icon = Instance.new("ImageLabel")
-local TextLabel = Instance.new("TextLabel")
-local Lists = Instance.new("ScrollingFrame")
-local UIListLayout = Instance.new("UIListLayout")
-local BringSunOrb = Instance.new("TextButton")
-local getmoney = Instance.new("TextButton")
-local UICorner_2 = Instance.new("UICorner")
-local ChangeSpeedOfShip = Instance.new("TextButton")
-local UnlockGamepass = Instance.new("TextButton") -- Assuming this is a TextButton
-local UICorner_3 = Instance.new("UICorner")
-local BringSunFlares = Instance.new("TextButton")
-local anticheatframehide = Instance.new("TextButton")
-local centaurasesp = Instance.new("TextButton")
-local tpvoayger = Instance.new("TextButton")
-local voyageresp = Instance.new("TextButton")
-local UICorner_4 = Instance.new("UICorner")
-local UICorner_5 = Instance.new("UICorner")
-local UICorner_6 = Instance.new("UICorner")
-local UICorner_7 = Instance.new("UICorner")
-local UICorner_8 = Instance.new("UICorner")
-local UICorner_9 = Instance.new("UICorner")
-local UICorner_10 = Instance.new("UICorner")
+local TeleportService = game:GetService("TeleportService")
 
---Properties:
+--Local Player Functions
 
-SpaceHubGui.Name = "SpaceHubGui"
-SpaceHubGui.Parent = playerGui
-SpaceHubGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local Slider = PlayerTab:CreateSlider({
+	Name = "Walkspeed",
+	Range = {10, 100},
+	Increment = 1,
+	Suffix = "Speed",
+	CurrentValue = 10,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = Value
+	end,
+})
+local Slider = PlayerTab:CreateSlider({
+	Name = "JetPack Speed",
+	Range = {5, 100},
+	Increment = 1,
+	Suffix = "Max Jetpack Speed",
+	CurrentValue = 5,
+	Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer:SetAttribute("jetpackSpeed", Value)
+	end,
+})
 
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = SpaceHubGui
-MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 127)
-MainFrame.BackgroundTransparency = 0.650
-MainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.BorderSizePixel = 0
-MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainFrame.Size = UDim2.new(0.538131237, 0, 0.629201591, 0)
+local Slider = PlayerTab:CreateSlider({
+	Name = "Jump Power",
+	Range = {50, 400},
+	Increment = 1,
+	Suffix = "Current Jump Power",
+	CurrentValue = 50,
+	Flag = "Slider3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").JumpPower = Value
+	end,
+})
 
-UIDrage = Instance.new("UIDragDetector")
-UIDrage.Parent = MainFrame
-UIAspectRatioConstraint.Parent = MainFrame
-UIAspectRatioConstraint.AspectRatio = 1.400
+local Slider = PlayerTab:CreateSlider({
+	Name = "Hip Height",
+	Range = {0, 100},
+	Increment = 1,
+	Suffix = "Current Hip Height",
+	CurrentValue = 0,
+	Flag = "Slider4", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").HipHeight = Value
+	end,
+})
 
-UICorner.Parent = MainFrame
+--Toggle Buttons For Boolens
+local Button = PlayerTab:CreateButton({
+	Name = "Sit Player",
+	Callback = function()
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit = true-- The function that takes place when the button is pressed
+	end,
+})
 
-UpperFrame.Name = "UpperFrame"
-UpperFrame.Parent = MainFrame
-UpperFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 127)
-UpperFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UpperFrame.BorderSizePixel = 0
-UpperFrame.Size = UDim2.new(1, 0, 0.183575809, 0)
+local Button = PlayerTab:CreateButton({
+	Name = "Reset",
+	Callback = function()
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0-- The function that takes place when the button is pressed
+	end,
+})
 
-UICorner1.Name = "UICorner1"
-UICorner1.Parent = UpperFrame
+local Button = PlayerTab:CreateButton({
+	Name = "Rejoin",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local placeId = game.PlaceId
+		TeleportService:Teleport(placeId, player)
+	end,
+})
 
-Icon.Name = "Icon"
-Icon.Parent = UpperFrame
-Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Icon.BackgroundTransparency = 1.000
-Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Icon.BorderSizePixel = 0
-Icon.Position = UDim2.new(0.0258094817, 0, 0.107361965, 0)
-Icon.Rotation = 50.000
-Icon.Size = UDim2.new(0.101454705, 0, 0.765235245, 0)
-Icon.Image = "rbxassetid://4581733037"
+local autorotateButton
+local AutoRotate = false
 
-TextLabel.Parent = UpperFrame
-TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.BorderSizePixel = 0
-TextLabel.Position = UDim2.new(0.15, 0, 0.072, 0)
-TextLabel.Size = UDim2.new(0.610605419, 0, 0.844172001, 0)
-TextLabel.Font = Enum.Font.FredokaOne
-TextLabel.Text = "Space Hub 🪐"
-TextLabel.TextColor3 = Color3.fromRGB(255, 170, 0)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
+autorotateButton = PlayerTab:CreateButton({
+	Name = "Auto Rotate: True",
+	Callback = function()
+		local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if not humanoid then
+			warn("Humanoid Not Found")
+			return
+		end
 
-Lists.Name = "Lists"
-Lists.Parent = MainFrame
-Lists.Active = true
-Lists.AnchorPoint = Vector2.new(0.5, 0.5)
-Lists.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Lists.BackgroundTransparency = 1.000
-Lists.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Lists.BorderSizePixel = 0
-Lists.Position = UDim2.new(0.503796458, 0, 0.647817969, 0)
-Lists.Size = UDim2.new(0.955973566, 0, 0.651975632, 0)
-Lists.ScrollBarThickness = 2
+		AutoRotate = not AutoRotate
+		if AutoRotate then
+			autorotateButton:Set("Auto Rotate: True")
+			humanoid.AutoRotate = true
+		else
+			autorotateButton:Set("Auto Rotate: False")
+			humanoid.AutoRotate = false
+		end
+	end,
+})
 
-UIListLayout.Parent = Lists
-UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 5)
+--Ship Functions
 
-BringSunOrb.Name = "BringSunOrb"
-BringSunOrb.Parent = Lists
-BringSunOrb.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-BringSunOrb.BackgroundTransparency = 0.650
-BringSunOrb.BorderColor3 = Color3.fromRGB(0, 0, 0)
-BringSunOrb.BorderSizePixel = 0
-BringSunOrb.Position = UDim2.new(0.373001873, 0, 0, 0)
-BringSunOrb.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-BringSunOrb.Font = Enum.Font.FredokaOne
-BringSunOrb.Text = "Bring Sun Orb"
-BringSunOrb.TextColor3 = Color3.fromRGB(255, 255, 255)
-BringSunOrb.TextScaled = true
-BringSunOrb.TextSize = 14.000
-BringSunOrb.TextWrapped = true
+local Slider = ShipTab:CreateSlider({
+	Name = "Ship Speed",
+	Range = {0, 150},
+	Increment = 1,
+	Suffix = "Max Speed",
+	CurrentValue = 0,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("maxSpeed", Value)-- The function that takes place when the slider changes
+	end,
+})
 
-UICorner_2.Parent = BringSunOrb
+local Slider = ShipTab:CreateSlider({
+	Name = "Ship Acceleration",
+	Range = {0, 150},
+	Increment = 1,
+	Suffix = "Max Acceleration",
+	CurrentValue = 0,
+	Flag = "Slider2",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("acceleration", Value)
+	end,
+})
 
-ChangeSpeedOfShip.Name = "ChangeSpeedOfShip"
-ChangeSpeedOfShip.Parent = Lists
-ChangeSpeedOfShip.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-ChangeSpeedOfShip.BackgroundTransparency = 0.650
-ChangeSpeedOfShip.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ChangeSpeedOfShip.BorderSizePixel = 0
-ChangeSpeedOfShip.Position = UDim2.new(0.373001873, 0, 0, 0)
-ChangeSpeedOfShip.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-ChangeSpeedOfShip.Font = Enum.Font.FredokaOne
-ChangeSpeedOfShip.Text = "Change Speed To Max 100 need sit on ship"
-ChangeSpeedOfShip.TextColor3 = Color3.fromRGB(255, 255, 255)
-ChangeSpeedOfShip.TextScaled = true
-ChangeSpeedOfShip.TextSize = 14.000
-ChangeSpeedOfShip.TextWrapped = true
-ChangeSpeedOfShip.MouseButton1Click:Connect(function()
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:FindFirstChildOfClass("Humanoid")
+local Slider = ShipTab:CreateSlider({
+	Name = "Ship Deceleration",
+	Range = {0, 150},
+	Increment = 1,
+	Suffix = "Max Deceleration",
+	CurrentValue = 0,
+	Flag = "Slider3",
+	Callback = function(Value)
+	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("deceleration", Value)
+	end,
+})
 
-if humanoid and humanoid.SeatPart then  
-	local seatParent = humanoid.SeatPart.Parent  
-	local main = seatParent:FindFirstChild("Main")  
 
-	if main then  
-		if main:GetAttribute("maxSpeed") ~= nil then  
-			main:SetAttribute("maxSpeed", 100)  
-			print("maxSpeed set to 100!")  
-		else  
-			warn("Main exists but 'maxSpeed' attribute not found.")  
-		end  
-	else  
-		warn("Main not found under SeatPart's parent.")  
-	end  
-else  
-	warn("You must be sitting on the ship to change speed.")  
+local Slider = ShipTab:CreateSlider({
+	Name = "Ship Agility",
+	Range = {0, 150},
+	Increment = 1,
+	Suffix = "Max Agility",
+	CurrentValue = 0,
+	Flag = "Slider4",
+	Callback = function(Value)
+	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("agility", Value)
+	end,		
+})
+
+--Client Settings Functions
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Instant Speed Gamepass",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("InstantSpeedGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Instant Brake Gamepass",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("InstantBrakeGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Ship Lock Gamepass (Client Side)",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("ShipLockGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Enable InGroup (Client Side)",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("inGroup", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Vortex Gamepass (Client Side)",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("VortexGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Quantum Drill Gamepass (Client Side)",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("QuantumDrillGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Unlock Double Xp Gamepass (Client Side)",
+	Callback = function()
+		game.Players.LocalPlayer:SetAttribute("DoubleXpGP", true)-- The function that takes place when the button is pressed
+	end,
+})
+
+--Other Functions
+
+local function firePrompt(prompt)
+	if typeof(prompt) == "Instance" and prompt:IsA("ProximityPrompt") then
+		-- fireproximityprompt is a global function in Roblox
+		fireproximityprompt(prompt)
+	else
+		warn("Provided object is not a ProximityPrompt!")
+	end
 end
 
-end)
+local Button = OtherTab:CreateButton({
+	Name = "Open Hubble Telescope",
+	Callback = function()
+		local prompt = workspace:WaitForChild("Planetoids"):WaitForChild("Hubble"):WaitForChild("ControlPanel"):FindFirstChildOfClass("ProximityPrompt")
+			if prompt then
+				firePrompt(prompt)
+        end
+    end,
+})
 
-UICorner_3.Parent = ChangeSpeedOfShip
-
-BringSunFlares.Name = "BringSunFlares"
-BringSunFlares.Parent = Lists
-BringSunFlares.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-BringSunFlares.BackgroundTransparency = 0.650
-BringSunFlares.BorderColor3 = Color3.fromRGB(0, 0, 0)
-BringSunFlares.BorderSizePixel = 0
-BringSunFlares.Position = UDim2.new(0.373001873, 0, 0, 0)
-BringSunFlares.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-BringSunFlares.Font = Enum.Font.FredokaOne
-BringSunFlares.Text = "Bring Sun Flares"
-BringSunFlares.TextColor3 = Color3.fromRGB(255, 255, 255)
-BringSunFlares.TextScaled = true
-BringSunFlares.TextSize = 14.000
-BringSunFlares.TextWrapped = true
-
-UICorner_4.Parent = BringSunFlares
-
-UnlockGamepass.Name = "GetAllGampasses"
-UnlockGamepass.Parent = Lists
-UnlockGamepass.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-UnlockGamepass.BackgroundTransparency = 0.650
-UnlockGamepass.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UnlockGamepass.BorderSizePixel = 0
-UnlockGamepass.Position = UDim2.new(0.373001873, 0, 0, 0)
-UnlockGamepass.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-UnlockGamepass.Font = Enum.Font.FredokaOne
-UnlockGamepass.Text = "Unlock All Gamepass (Only Gui)"
-UnlockGamepass.TextColor3 = Color3.fromRGB(255, 255, 255)
-UnlockGamepass.TextScaled = true
-UnlockGamepass.TextSize = 14.000
-UnlockGamepass.TextWrapped = true
-UnlockGamepass.MouseButton1Click:Connect(function()
-local attributes = {
-"DoubleXpGP",
-"inGroup",
-"InstantBrakeGP",
-"InstantSpeedGP",
-"QuantumDrillGP",
-"ShipLockGP",
-"VortexGP"
-}
-
-for _, attributeName in ipairs(attributes) do  
-	if player:GetAttribute(attributeName) == nil then  
-		player:SetAttribute(attributeName, true)  
-	else  
-		player:SetAttribute(attributeName, true)  
-	end  
-end  
-
-print("All attributes set to true!")
-
-end)
-
-UICorner_6.Parent = getmoney
-
-getmoney.Name = "GetMoney"
-getmoney.Parent = Lists
-getmoney.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-getmoney.BackgroundTransparency = 0.650
-getmoney.BorderColor3 = Color3.fromRGB(0, 0, 0)
-getmoney.BorderSizePixel = 0
-getmoney.Position = UDim2.new(0.373001873, 0, 0, 0)
-getmoney.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-getmoney.Font = Enum.Font.FredokaOne
-getmoney.Text = "Get Credits,Gems And Xp (Client Side)"
-getmoney.TextColor3 = Color3.fromRGB(255, 255, 255)
-getmoney.TextScaled = true
-getmoney.TextSize = 14.000
-getmoney.TextWrapped = true
-getmoney.MouseButton1Click:Connect(function()
-local resourceNames = { "Money", "Xp", "Gems" }
-
-for _, name in ipairs(resourceNames) do  
-	local current = player:GetAttribute(name)  
-
-	if current == nil then  
-		player:SetAttribute(name, 500)  
-	else  
-		player:SetAttribute(name, current + 500)  
-	end  
-end  
-
-print("+500 added to Money, Xp, and Gems!")
-
-end)
-
-UICorner_7.Parent = voyageresp
-
-local espOn = false
-local billboardName = "VoyagerESP_Billboard"
-
-local goldenRecord = workspace:WaitForChild("Planetoids")
-:WaitForChild("Voyager")
-:WaitForChild("Minerals")
-:WaitForChild("Golden Record")
-
-local function addBillboard()
-if goldenRecord:FindFirstChild(billboardName) then return end
-
-local billboard = Instance.new("BillboardGui")  
-billboard.Name = billboardName  
-billboard.Adornee = goldenRecord  
-billboard.Size = UDim2.new(0, 100, 0, 25)  
-billboard.StudsOffset = Vector3.new(0, 2, 0)  
-billboard.AlwaysOnTop = true  
-billboard.Parent = goldenRecord  
-
-local textLabel = Instance.new("TextLabel")  
-textLabel.Size = UDim2.new(1, 0, 1, 0)  
-TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)  
-textLabel.Position = UDim2.new(0.5, 0, 0.5, 0)  
-textLabel.BackgroundTransparency = 1  
-textLabel.Text = "Voyager Here"  
-textLabel.TextColor3 = Color3.new(0, 0.666667, 1)  
-textLabel.Font = Enum.Font.FredokaOne  
-textLabel.TextScaled = true  
-textLabel.Parent = billboard
-
-end
-
-local function removeBillboard()
-local billboard = goldenRecord:FindFirstChild(billboardName)
-if billboard then
-billboard:Destroy()
-end
-end
-
-voyageresp.Name = "VoyagerESP"
-voyageresp.Parent = Lists
-voyageresp.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-voyageresp.BackgroundTransparency = 0.650
-voyageresp.BorderColor3 = Color3.fromRGB(0, 0, 0)
-voyageresp.BorderSizePixel = 0
-voyageresp.Position = UDim2.new(0.373001873, 0, 0, 0)
-voyageresp.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-voyageresp.Font = Enum.Font.FredokaOne
-voyageresp.Text = "Voyager ESP: Off"
-voyageresp.TextColor3 = Color3.fromRGB(255, 255, 255)
-voyageresp.TextScaled = true
-voyageresp.TextSize = 14.000
-voyageresp.TextWrapped = true
-voyageresp.MouseButton1Click:Connect(function()
-espOn = not espOn
-if espOn then
-voyageresp.Text = "Voyager ESP: On"
-addBillboard()
-else
-voyageresp.Text = "Voyager ESP: Off"
-removeBillboard()
-end
-end)
-
-local espOn = false
-local billboardName = "CentaurESP_Billboard"
-
-local function getCentaurFolder()
-return workspace:FindFirstChild("Centaurs")
-end
-
-local function addBillboards()
-local centaurFolder = getCentaurFolder()
-if not centaurFolder then
-warn("Centaurs folder not found in workspace.")
-return
-end
-
-for _, model in pairs(centaurFolder:GetChildren()) do  
-	if model:IsA("Model") and not model:FindFirstChild(billboardName) then  
-		local primaryPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChildWhichIsA("BasePart")  
-		if primaryPart then  
-			local billboard = Instance.new("BillboardGui")  
-			billboard.Name = billboardName  
-			billboard.Adornee = primaryPart  
-			billboard.Size = UDim2.new(0, 100, 0, 25)  
-			billboard.StudsOffset = Vector3.new(0, 3, 0)  
-			billboard.AlwaysOnTop = true  
-			billboard.Parent = model  
-
-			local textLabel = Instance.new("TextLabel")  
-			textLabel.Size = UDim2.new(1, 0, 1, 0)  
-			TextLabel.AnchorPoint = Vector2.new(0.5, 0.5) -- Center alignment  
-			textLabel.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position  
-			textLabel.BackgroundTransparency = 1  
-			textLabel.Text = model.Name  
-			textLabel.TextColor3 = Color3.new(1, 1, 1) -- Yellow  
-			textLabel.Font = Enum.Font.Jura  
-			textLabel.TextScaled = true  
-			textLabel.Parent = billboard  
-		end  
-	end  
-end
-
-end
-
-local function removeBillboards()
-local centaurFolder = getCentaurFolder()
-if not centaurFolder then return end
-
-for _, model in pairs(centaurFolder:GetChildren()) do  
-	local billboard = model:FindFirstChild(billboardName)  
-	if billboard then  
-		billboard:Destroy()  
-	end  
-end
-
-end
-
-UICorner_8.Parent = centaurasesp
-
-centaurasesp.Name = "CentaursESP"
-centaurasesp.Parent = Lists
-centaurasesp.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-centaurasesp.BackgroundTransparency = 0.650
-centaurasesp.BorderColor3 = Color3.fromRGB(0, 0, 0)
-centaurasesp.BorderSizePixel = 0
-centaurasesp.Position = UDim2.new(0.373001873, 0, 0, 0)
-centaurasesp.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-centaurasesp.Font = Enum.Font.FredokaOne
-centaurasesp.Text = "Centaurs ESP: Off"
-centaurasesp.TextColor3 = Color3.fromRGB(255, 255, 255)
-centaurasesp.TextScaled = true
-centaurasesp.TextSize = 14.000
-centaurasesp.TextWrapped = true
-centaurasesp.MouseButton1Click:Connect(function()
-local centaurFolder = getCentaurFolder()
-if not centaurFolder then
-warn("Centaurs folder not found, can't toggle ESP.")
-return
-end
-
-espOn = not espOn  
-if espOn then  
-	centaurasesp.Text = "Centaurs ESP: On"  
-	addBillboards()  
-else  
-	centaurasesp.Text = "Centaurs ESP: Off"  
-	removeBillboards()  
-end
-
-end)
+local AntiCheatHideFrameButton
 
 local dialogGui = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("DialogGui")
 local cleanerOn = false
 local cleanerConnection = nil
 
-UICorner_9.Parent = anticheatframehide
+toggleButton = OtherTab:CreateButton({
+	Name = "Anti-Cheat Warning Frame: Show",
+	Callback = function()
+		cleanerOn = not cleanerOn
 
-anticheatframehide.Name = "AntiCheatNotiHide"
-anticheatframehide.Parent = Lists
-anticheatframehide.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-anticheatframehide.BackgroundTransparency = 0.650
-anticheatframehide.BorderColor3 = Color3.fromRGB(0, 0, 0)
-anticheatframehide.BorderSizePixel = 0
-anticheatframehide.Position = UDim2.new(0.373001873, 0, 0, 0)
-anticheatframehide.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-anticheatframehide.Font = Enum.Font.FredokaOne
-anticheatframehide.Text = "Hide Anti-Cheat Frame: Off"
-anticheatframehide.TextColor3 = Color3.fromRGB(255, 255, 255)
-anticheatframehide.TextScaled = true
-anticheatframehide.TextSize = 14.000
-anticheatframehide.TextWrapped = true
-anticheatframehide.MouseButton1Click:Connect(function()
-cleanerOn = not cleanerOn
+		if cleanerOn then
+			toggleButton:Set("Anti-Cheat Warning Frame: Hide") -- show "Hide" when enabled
 
-if cleanerOn then  
-	anticheatframehide.Text = "Hide Anti-Cheat Frame: On"  
+			-- Start cleaning loop
+			cleanerConnection = RunService.RenderStepped:Connect(function()
+				if not dialogGui then return end
 
-	-- Start cleaning loop  
-	cleanerConnection = RunService.RenderStepped:Connect(function()  
-		if not dialogGui then return end  
+				local dialogsFrame = dialogGui:FindFirstChild("DialogsFrames")
+				if dialogsFrame then
+					for _, child in ipairs(dialogsFrame:GetChildren()) do
+						if child:IsA("Frame") then
+							child:Destroy()
+						end
+					end
+				end
+			end)
 
-		local dialogsFrame = dialogGui:FindFirstChild("DialogsFrames")  
-		if dialogsFrame then  
-			for _, child in ipairs(dialogsFrame:GetChildren()) do  
-				if child:IsA("Frame") then  
-					child:Destroy()  
-				end  
-			end  
-		end  
-	end)  
+		else
+			toggleButton:Set("Anti-Cheat Warning Frame: Show") -- show "Show" when disabled
 
-else  
-	anticheatframehide.Text = "Hide Anti-Cheat Frame: Off"  
+			-- Stop cleaning loop
+			if cleanerConnection then
+				cleanerConnection:Disconnect()
+				cleanerConnection = nil
+			end
+		end
+	end
+})
 
-	-- Stop cleaning loop  
-	if cleanerConnection then  
-		cleanerConnection:Disconnect()  
-		cleanerConnection = nil  
-	end  
+local Button = OtherTab:CreateButton({
+	Name = "Clean Rocks (Dont Click If You Removed Asteroids)",
+	Callback = function()
+		local rocks = workspace:WaitForChild("Rocks")
+		for _, child in ipairs(rocks:GetChildren()) do
+			child:Destroy()
+		end
+	end,
+})
+
+local Button = OtherTab:CreateButton({
+	Name = "Remove Asteroids",
+	Callback = function()
+		local rocks = workspace:WaitForChild("Rocks")
+			rocks:Destroy()
+		end
+})
+
+local Button
+
+Button = OtherTab:CreateButton({
+	Name = "Destroy Client (Stop The Main Functions)",
+	Callback = function()
+		local skin = workspace:WaitForChild("Planets"):WaitForChild("Eris"):WaitForChild("Skin")
+		if skin then
+			skin:Destroy()
+		end
+
+		-- Change button text after action
+		Button:Set("Game Client Destroyed. Please Rejoin")
+	end,
+})
+
+--ESP Functions
+
+--Alien Ship ESP Functions
+
+local espAOn = false
+local billboardName = "AlienESP_Billboard"
+
+local alienShip = workspace:WaitForChild("SpecialRockets"):WaitForChild("Alien")
+
+local function addABillboard()
+	if alienShip:FindFirstChild(billboardName) then return end
+
+	local abillboard = Instance.new("BillboardGui")
+	abillboard.Name = billboardName
+	abillboard.Adornee = alienShip
+	abillboard.Size = UDim2.new(0, 100, 0, 25)
+	abillboard.StudsOffset = Vector3.new(0, 2, 0)
+	abillboard.AlwaysOnTop = true
+	abillboard.Parent = alienShip
+
+	local atextLabel = Instance.new("TextLabel")
+	atextLabel.Size = UDim2.new(1, 0, 1, 0)
+	atextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	atextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+	atextLabel.BackgroundTransparency = 1
+	atextLabel.Text = "Alien Ship 🛸"
+	atextLabel.TextColor3 = Color3.new(0, 0.666667, 0.498039)
+	atextLabel.Font = Enum.Font.FredokaOne
+	atextLabel.TextScaled = true
+	atextLabel.Parent = abillboard
 end
 
-end)
+local function removeABillboard()
+	local billboard = alienShip:FindFirstChild(billboardName)
+	if billboard then
+		billboard:Destroy()
+	end
+end
 
-UICorner_10.Parent = tpvoayger
-
-tpvoayger.Name = "TpVoyager"
-tpvoayger.Parent = Lists
-tpvoayger.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-tpvoayger.BackgroundTransparency = 0.650
-tpvoayger.BorderColor3 = Color3.fromRGB(0, 0, 0)
-tpvoayger.BorderSizePixel = 0
-tpvoayger.Position = UDim2.new(0.373001873, 0, 0, 0)
-tpvoayger.Size = UDim2.new(0.99000001, 0, 0.0799999982, 0)
-tpvoayger.Font = Enum.Font.FredokaOne
-tpvoayger.Text = "Loop Tp Voyager: Off"
-tpvoayger.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpvoayger.TextScaled = true
-tpvoayger.TextSize = 14.000
-tpvoayger.TextWrapped = true
+--Centaurs ESP Functions
 
 local espOn = false
-local teleportLoop
+local billboardName = "CentaurESP_Billboard"
 
-local targetPart = workspace:WaitForChild("Planetoids")
-:WaitForChild("Voyager")
-:WaitForChild("Minerals")
-:WaitForChild("Golden Record")
-
-tpvoayger.Text = "Loop Tp Voyager: Off"
-
-tpvoayger.MouseButton1Click:Connect(function()
-espOn = not espOn
-if espOn then
-tpvoayger.Text = "Loop Tp Voyager: On"
-
-teleportLoop = RunService.Heartbeat:Connect(function()  
-		local character = player.Character  
-		if character and character.PrimaryPart then  
-			character:SetPrimaryPartCFrame(targetPart.CFrame + Vector3.new(0, 0, 0))  
-		end  
-	end)  
-
-	-- Auto toggle off after 20 seconds  
-	delay(20, function()  
-		if espOn then  
-			espOn = false  
-			tpvoayger.Text = "Loop Tp Voyager: Off"  
-			if teleportLoop then  
-				teleportLoop:Disconnect()  
-				teleportLoop = nil  
-			end  
-		end  
-	end)  
-else  
-	tpvoayger.Text = "Loop Tp Voyager: Off"  
-	if teleportLoop then  
-		teleportLoop:Disconnect()  
-		teleportLoop = nil  
-	end  
+local function getCentaurFolder()
+	return workspace:FindFirstChild("Centaurs")
 end
 
-end)
---say nice
+local function addBillboards()
+	local centaurFolder = getCentaurFolder()
+	if not centaurFolder then
+		warn("Centaurs folder not found in workspace.")
+		return
+	end
 
+	for _, model in pairs(centaurFolder:GetChildren()) do
+		if model:IsA("Model") and not model:FindFirstChild(billboardName) then
+			local primaryPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChildWhichIsA("BasePart")
+			if primaryPart then
+				local billboard = Instance.new("BillboardGui")
+				billboard.Name = billboardName
+				billboard.Adornee = primaryPart
+				billboard.Size = UDim2.new(0, 100, 0, 25)
+				billboard.StudsOffset = Vector3.new(0, 3, 0)
+				billboard.AlwaysOnTop = true
+				billboard.Parent = model
+
+				local textLabel = Instance.new("TextLabel")
+				textLabel.Size = UDim2.new(1, 0, 1, 0)
+				textLabel.AnchorPoint = Vector2.new(0.5, 0.5) -- Center alignment
+				textLabel.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position
+				textLabel.BackgroundTransparency = 1
+				textLabel.Text = model.Name
+				textLabel.TextColor3 = Color3.new(1, 1, 1) -- Yellow
+				textLabel.Font = Enum.Font.Jura
+				textLabel.TextScaled = true
+				textLabel.Parent = billboard
+			end
+		end
+	end
+end
+
+local function removeBillboards()
+	local centaurFolder = getCentaurFolder()
+	if not centaurFolder then return end
+
+	for _, model in pairs(centaurFolder:GetChildren()) do
+		local billboard = model:FindFirstChild(billboardName)
+		if billboard then
+			billboard:Destroy()
+		end
+	end
+end
+
+--Voyager ESP Functions
+
+local espOn = false
+local billboardName = "VoyagerESP_Billboard"
+
+local goldenRecord = workspace:WaitForChild("Planetoids")
+	:WaitForChild("Voyager")
+	:WaitForChild("Minerals")
+	:WaitForChild("Golden Record")
+
+local function addBillboard()
+	if goldenRecord:FindFirstChild(billboardName) then return end
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = billboardName
+	billboard.Adornee = goldenRecord
+	billboard.Size = UDim2.new(0, 100, 0, 25)
+	billboard.StudsOffset = Vector3.new(0, 2, 0)
+	billboard.AlwaysOnTop = true
+	billboard.Parent = goldenRecord
+
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Size = UDim2.new(1, 0, 1, 0)
+	textLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	textLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+	textLabel.BackgroundTransparency = 1
+	textLabel.Text = "Voyager 🛰"
+	textLabel.TextColor3 = Color3.new(0, 0.666667, 1)
+	textLabel.Font = Enum.Font.FredokaOne
+	textLabel.TextScaled = true
+	textLabel.Parent = billboard
+end
+
+local function removeBillboard()
+	local billboard = goldenRecord:FindFirstChild(billboardName)
+	if billboard then
+		billboard:Destroy()
+	end
+end
+
+local toggleButton -- forward declare for use inside the callback
+local espvgbutton
+local AlienESPButton
+
+toggleButton = ESPTab:CreateButton({
+	Name = "Centaurs ESP: Off",
+	Callback = function()
+		local centaurFolder = getCentaurFolder()
+		if not centaurFolder then
+			warn("Centaurs folder not found, can't toggle ESP.")
+			return
+		end
+
+		espOn = not espOn
+		if espOn then
+			toggleButton:Set("Centaurs ESP: On")
+			addBillboards()
+		else
+			toggleButton:Set("Centaurs ESP: Off")
+			removeBillboards()
+		end
+	end,
+})
+
+espvgbutton = ESPTab:CreateButton({
+	Name = "Voyager ESP: Off",
+	Callback = function()
+		espOn = not espOn
+		if espOn then
+			espvgbutton:Set("Voyager ESP: On")
+			addBillboard()
+		else
+			espvgbutton:Set("Voyager ESP: Off")
+			removeBillboard()
+		end
+	end
+})
+
+AlienESPButton = ESPTab:CreateButton({
+	Name = "Alien UFO ESP: Off",
+	Callback = function()
+		espAOn = not espAOn
+		if espAOn then
+			AlienESPButton:Set("Alien UFO ESP: On")
+			addABillboard()
+		else
+			AlienESPButton:Set("Alien UFO ESP: Off")
+			removeABillboard()
+		end
+	end
+})

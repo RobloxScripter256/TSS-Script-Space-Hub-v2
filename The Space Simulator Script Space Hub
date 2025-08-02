@@ -193,7 +193,7 @@ local Slider = ShipTab:CreateSlider({
 	end,		
 })
 
-local Label = ShipTab:CreateLabel("Kuiper Belt Speed Loop (Value 0 To Stop Loop)", 4483362458, Color3.fromRGB(0, 0, 0), false) -- Title, Icon, Color, IgnoreTheme
+local Label = ShipTab:CreateLabel("Kuiper Belt Speed Loop (Value 0 To Stop Loop)", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 local speedLoopConnection
 local currentSpeedValue = 0 -- Keep track of latest slider value
@@ -375,7 +375,7 @@ local Button
 Button = OtherTab:CreateButton({
 	Name = "Destroy Client (Stop The Main Functions)",
 	Callback = function()
-		local skin = workspace:WaitForChild("Planets"):WaitForChild("Eris"):WaitForChild("Skin")
+		local skin = workspace:WaitForChild("Planets"):WaitForChild("Earth"):WaitForChild("Skin")
 		if skin then
 			skin:Destroy()
 		end

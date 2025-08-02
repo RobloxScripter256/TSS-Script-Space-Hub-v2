@@ -375,7 +375,7 @@ local Button
 Button = OtherTab:CreateButton({
 	Name = "Destroy Client (Stop The Main Functions)",
 	Callback = function()
-		local skin = workspace:WaitForChild("Planets"):WaitForChild("Earth"):WaitForChild("Skin")
+		local skin = workspace:WaitForChild("Planets"):WaitForChild("Eris"):WaitForChild("Skin")
 		if skin then
 			skin:Destroy()
 		end

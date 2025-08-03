@@ -402,7 +402,7 @@ local Toggle3 = AAuraTab:CreateToggle({
 })
 
 local Toggle4 = AAuraTab:CreateToggle({
-	Name = "Unlock All Auras",
+	Name = "Unlock All Badge Auras",
 	CurrentValue = false,
 	Flag = "Toggle4",
 	Callback = function(Value)
@@ -430,7 +430,7 @@ local ShopTab = Window:CreateTab("Shop", 4483362458) -- Title, Image
 
 local Label = ShopTab:CreateLabel("Shop Items", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
 
-local Button = CSettingsTab:CreateButton({
+local Button = ShopTab:CreateButton({
 	Name = "Give All Shop Tools",
 	Callback = function()
 		local shop = game.ReplicatedStorage:FindFirstChild("Shop")

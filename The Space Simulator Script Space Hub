@@ -153,7 +153,7 @@ autorotateButton = PlayerTab:CreateButton({
 
 --Ship Functions
 
-local Label = ShipTab:CreateLabel("For Change Speed You Must Sitting In Ship", 4483362458, Color3.fromRGB(255, 170, 255), false) -- Title, Icon, Color, IgnoreTheme
+local Label = ShipTab:CreateLabel("For Change Speed You Must Sitting In Ship", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 local Slider = ShipTab:CreateSlider({
 	Name = "Ship Speed",
@@ -638,6 +638,14 @@ local Toggle = ESPTab:CreateToggle({
 	end,
 })
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--Other Teleports
+
+local OtherTpTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
+
+local Label = OtherTpTab:CreateLabel("Artifacts", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
 --Artifacts Teleport
 
 -- Outside the button
@@ -661,7 +669,7 @@ local function refreshArtifacts()
 	end
 end
 
-local Button = ESPTab:CreateButton({
+local Button = OtherTpTab:CreateButton({
 	Name = "Artifact Teleport",
 	Callback = function()
 		local player = game.Players.LocalPlayer
@@ -699,8 +707,38 @@ local Button = ESPTab:CreateButton({
 	end,
 })
 
+local Label = OtherTpTab:CreateLabel("Caves", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+local isInsideMakeMake = false  -- Track state
+
+local Button = OtherTpTab:CreateButton({
+	Name = "Teleport Inside MakeMake Cave",
+	Callback = function(self)
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+
+		local center = workspace:FindFirstChild("Planets") and workspace.Planets:FindFirstChild("MakeMake") and workspace.Planets.MakeMake:FindFirstChild("Center")
+		if not center or not center:IsA("BasePart") then return end
+
+		if not isInsideMakeMake then
+			-- Teleport under Center
+			hrp.CFrame = center.CFrame * CFrame.new(0, -10, 0)
+			isInsideMakeMake = true
+			self:SetText("Teleport Outside MakeMake Cave")
+		else
+			-- Teleport above Center
+			hrp.CFrame = center.CFrame * CFrame.new(0, 35, 0) -- average between 30-40
+			isInsideMakeMake = false
+			self:SetText("Teleport Inside MakeMake Cave")
+		end
+	end,
+})
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
 
-local Label = TrollTab:CreateLabel("We are working on this D:", 4483362458, Color3.fromRGB(255, 170, 255), false) -- Title, Icon, Color, IgnoreTheme
+local Label = TrollTab:CreateLabel("We are working on this D:", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+

@@ -1,3 +1,12 @@
+local allowedPlaceIds = {
+	15027718878, -- Replace with the allowed PlaceId(s)
+}
+
+if not table.find(allowedPlaceIds, game.PlaceId) then
+	warn("This script is not allowed in this place.")
+	return -- stops the script from continuing
+end
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -152,7 +161,7 @@ local Slider = ShipTab:CreateSlider({
 	CurrentValue = 0,
 	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("maxSpeed", Value)-- The function that takes place when the slider changes
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("maxSpeed", Value)-- The function that takes place when the slider changes
 	end,
 })
 
@@ -176,7 +185,7 @@ local Slider = ShipTab:CreateSlider({
 	CurrentValue = 0,
 	Flag = "Slider3",
 	Callback = function(Value)
-	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("deceleration", Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("deceleration", Value)
 	end,
 })
 
@@ -189,7 +198,7 @@ local Slider = ShipTab:CreateSlider({
 	CurrentValue = 0,
 	Flag = "Slider4",
 	Callback = function(Value)
-	game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("agility", Value)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").SeatPart.Parent:FindFirstChild("Main"):SetAttribute("agility", Value)
 	end,		
 })
 
@@ -306,10 +315,10 @@ local Button = OtherTab:CreateButton({
 	Name = "Open Hubble Telescope",
 	Callback = function()
 		local prompt = workspace:WaitForChild("Planetoids"):WaitForChild("Hubble"):WaitForChild("ControlPanel"):FindFirstChildOfClass("ProximityPrompt")
-			if prompt then
-				firePrompt(prompt)
-        end
-    end,
+		if prompt then
+			firePrompt(prompt)
+		end
+	end,
 })
 
 local AntiCheatHideFrameButton
@@ -366,8 +375,8 @@ local Button = OtherTab:CreateButton({
 	Name = "Remove Asteroids",
 	Callback = function()
 		local rocks = workspace:WaitForChild("Rocks")
-			rocks:Destroy()
-		end
+		rocks:Destroy()
+	end
 })
 
 local Button

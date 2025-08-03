@@ -719,7 +719,7 @@ local Button = OtherTpTab:CreateButton({
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		if not hrp then return end
 
-		local center = workspace:FindFirstChild("Planets") and workspace.Planets:FindFirstChild("Makemake") and workspace.Planets.MakeMake:FindFirstChild("Center")
+		local center = workspace:WaitForChild("Planets"):WaitForChild("Makemake"):WaitForChild("Center")
 		if not center or not center:IsA("BasePart") then return end
 
 		if not isInsideMakeMake then

@@ -253,11 +253,13 @@ local Button = CSettingsTab:CreateButton({
 	Callback = function()
 		local Players = game:GetService("Players")
 		local LocalPlayer = Players.LocalPlayer
+		local Terrain = workspace:FindFirstChildOfClass("Terrain")
 
-		-- Clean workspace (excluding player characters and folders)
+		-- Clean workspace
 		for _, item in ipairs(workspace:GetChildren()) do
 			local isPlayerChar = false
 
+			-- Ignore player characters
 			for _, player in ipairs(Players:GetPlayers()) do
 				if player.Character == item then
 					isPlayerChar = true
@@ -265,29 +267,41 @@ local Button = CSettingsTab:CreateButton({
 				end
 			end
 
-			if not isPlayerChar and not item:IsA("Folder") then
-				if item:IsA("Model") or item:IsA("Part") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
+			-- Destroy all except characters and terrain (terrain cleared later)
+			if not isPlayerChar and item ~= Terrain then
+				pcall(function()
 					item:Destroy()
-				end
+				end)
 			end
 		end
 
-		-- Clear terrain (local player view only)
-		workspace.Terrain:Clear()
+		-- Clear terrain (client-side, including clouds/grass/water/voxels)
+		if Terrain then
+			pcall(function()
+				Terrain:Clear()
+				local clouds = Terrain:FindFirstChild("Clouds")
+				if clouds then clouds:Destroy() end
+			end)
+		end
 
-		-- Create new baseplate
+		-- Create baseplate
+		local existingBase = workspace:FindFirstChild("Baseplate")
+		if existingBase then existingBase:Destroy() end
+
 		local baseplate = Instance.new("Part")
 		baseplate.Name = "Baseplate"
 		baseplate.Anchored = true
-		baseplate.Size = Vector3.new(2042, 26, 2042) -- Changed Y size to 26
-		baseplate.Position = Vector3.new(0, -13, 0) -- Lowered to match new height
+		baseplate.Size = Vector3.new(2042, 26, 2042)
+		baseplate.Position = Vector3.new(0, -13, 0)
 		baseplate.Material = Enum.Material.SmoothPlastic
 		baseplate.Color = Color3.fromRGB(163, 162, 165)
+		baseplate.TopSurface = Enum.SurfaceType.Smooth
+		baseplate.BottomSurface = Enum.SurfaceType.Smooth
 		baseplate.Parent = workspace
 
-		-- Optional: Reset camera focus to prevent animation/camera bug
+		-- Fix camera on respawn (to avoid animation/camera bug)
 		LocalPlayer.CharacterAdded:Connect(function(char)
-			repeat wait() until char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart")
+			repeat task.wait() until char:FindFirstChild("Humanoid")
 			workspace.CurrentCamera.CameraSubject = char:FindFirstChild("Humanoid")
 		end)
 	end,

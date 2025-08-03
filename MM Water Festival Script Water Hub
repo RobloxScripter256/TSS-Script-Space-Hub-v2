@@ -274,7 +274,6 @@ local Button = CSettingsTab:CreateButton({
 
 		-- Clear terrain (local player view only)
 		workspace.Terrain:Clear()
-		workspace.Terrain:FindFirstChildOfClass("Clouds"):Destroy()
 
 		-- Create new baseplate
 		local baseplate = Instance.new("Part")

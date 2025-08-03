@@ -483,47 +483,54 @@ end
 local Button = TrollTab:CreateButton({
 	Name = "Void Bring ALL",
 	Callback = function()
-		local character = game.Players.LocalPlayer.Character
-		if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+		local Players = game:GetService("Players")
+		local LocalPlayer = Players.LocalPlayer
+		local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+		local hrp = character:WaitForChild("HumanoidRootPart")
 
-		-- Step 1: Move to pre-drive position
-		character:MoveTo(Vector3.new(-822, 3, 326))
+		-- Step 1: Move to start position
+		hrp.CFrame = CFrame.new(-822, 3, 326)
 		task.wait(0.5)
 
-		-- Step 2: Find nearest drive seat and teleport to it
-		local seat = findNearestDriveSeat()
-		if seat then
-			character:MoveTo(seat.Position + Vector3.new(0, 0, 0))
-			task.wait(0.5)
+		-- Step 2: Find nearest Drive seat within 20 studs
+		local nearestSeat
+		local shortestDistance = 20
 
-			-- Sit the player
-			local humanoid = character:FindFirstChildOfClass("Humanoid")
-			if humanoid then
-				humanoid.Sit = true
-			end
-
-			-- Step 3: Ride to all players
-			local root = character:FindFirstChild("HumanoidRootPart")
-			if root then
-				for _, player in ipairs(game.Players:GetPlayers()) do
-					if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-						seat.CFrame = player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-						task.wait(0.1)
-					end
+		for _, obj in ipairs(workspace:GetDescendants()) do
+			if obj:IsA("VehicleSeat") and obj.Name == "Drive" then
+				local dist = (hrp.Position - obj.Position).Magnitude
+				if dist < shortestDistance then
+					shortestDistance = dist
+					nearestSeat = obj
 				end
 			end
-
-			-- Step 4: Teleport seat to below
-			seat.CFrame = CFrame.new(0, -30, 0)
-			task.wait(0.5)
-
-			-- Step 5: Unseat
-			if humanoid then
-				humanoid.Sit = false
-			end
-
-			-- Step 6: Move back to surface
-			character:MoveTo(Vector3.new(0, 10, 0))
 		end
+
+		if not nearestSeat then return end
+
+		-- Step 3: Teleport to Drive seat and sit
+		hrp.CFrame = nearestSeat.CFrame + Vector3.new(0, 1, 0)
+		task.wait(0.5)
+		humanoid.Sit = true
+		task.wait(0.5)
+
+		-- Step 4: Move seat to each player
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+				local targetPos = player.Character.HumanoidRootPart.Position + Vector3.new(0, 0, 5)
+				nearestSeat.CFrame = CFrame.new(targetPos)
+				task.wait(0.2)
+			end
+		end
+
+		-- Step 5: Drop seat down
+		nearestSeat.CFrame = CFrame.new(0, -30, 0)
+		task.wait(0.5)
+
+		-- Step 6: Unseat player and bring back up
+		humanoid.Sit = false
+		task.wait(0.5)
+		hrp.CFrame = CFrame.new(0, 10, 0)
 	end,
 })

@@ -114,6 +114,17 @@ local Input = PlayerTab:CreateInput({
 	end,
 })
 
+local TeleportService = game:GetService("TeleportService")
+
+local Button = PlayerTab:CreateButton({
+	Name = "Rejoin Server",
+	Callback = function()
+		local placeId = game.PlaceId
+		local jobId = game.JobId
+		TeleportService:TeleportToPlaceInstance(placeId, jobId, LocalPlayer)
+	end,
+})
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
@@ -319,7 +330,9 @@ local Button = CSettingsTab:CreateButton({
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local AAuraTab = Window:CreateTab("Admin Aura Settings", 4483362458) -- Title, Image
+local AAuraTab = Window:CreateTab("Aura Settings", 4483362458) -- Title, Image
+
+local Label = AAuraTab:CreateLabel("Admin Auras", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
 
 local Toggle = AAuraTab:CreateToggle({
 	Name = "Admin Aura Button Visible",
@@ -357,6 +370,75 @@ local Toggle2 = AAuraTab:CreateToggle({
 				local adminLock = imageButton:FindFirstChild("AdminLock")
 				if adminLock and adminLock:IsA("ImageButton") then
 					adminLock.Visible = not Value -- false if toggled on, true if toggled off
+				end
+			end
+		end
+	end,
+})
+
+local Label = AAuraTab:CreateLabel("Shop Auras", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+
+local Toggle3 = AAuraTab:CreateToggle({
+	Name = "Unlock All Auras",
+	CurrentValue = false,
+	Flag = "Toggle3",
+	Callback = function(Value)
+		local root = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+			:WaitForChild("MainGuis")
+			:WaitForChild("Aura")
+			:WaitForChild("Frame")
+			:WaitForChild("ImageLabel")
+			:WaitForChild("ScrollingFrame")
+
+		for _, imageButton in ipairs(root:GetChildren()) do
+			if imageButton:IsA("ImageButton") then
+				local adminLock = imageButton:FindFirstChild("Lock")
+				if adminLock and adminLock:IsA("ImageButton") then
+					adminLock.Visible = not Value -- false if toggled on, true if toggled off
+				end
+			end
+		end
+	end,
+})
+
+local Toggle4 = AAuraTab:CreateToggle({
+	Name = "Unlock All Auras",
+	CurrentValue = false,
+	Flag = "Toggle4",
+	Callback = function(Value)
+		local root = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+			:WaitForChild("MainGuis")
+			:WaitForChild("Aura")
+			:WaitForChild("Frame")
+			:WaitForChild("ImageLabel")
+			:WaitForChild("ScrollingFrame2")
+
+		for _, imageButton in ipairs(root:GetChildren()) do
+			if imageButton:IsA("ImageButton") then
+				local adminLock = imageButton:FindFirstChild("BadgeLock")
+				if adminLock and adminLock:IsA("ImageButton") then
+					adminLock.Visible = not Value -- false if toggled on, true if toggled off
+				end
+			end
+		end
+	end,
+})
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local ShopTab = Window:CreateTab("Shop", 4483362458) -- Title, Image
+
+local Label = ShopTab:CreateLabel("Shop Items", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Give All Shop Tools",
+	Callback = function()
+		local shop = game.ReplicatedStorage:FindFirstChild("Shop")
+		if shop then
+			for _, tool in ipairs(shop:GetChildren()) do
+				if tool:IsA("Tool") then
+					local clonedTool = tool:Clone()
+					clonedTool.Parent = game.Players.LocalPlayer:WaitForChild("Backpack")
 				end
 			end
 		end

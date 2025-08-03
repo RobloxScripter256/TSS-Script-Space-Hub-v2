@@ -457,26 +457,43 @@ local function findNearestDriveSeat()
 	local carsFolder = workspace:FindFirstChild("Cars")
 	if not carsFolder then return nil end
 
-	local nearestSeat = nil
+	local nearestCarModel = nil
 	local shortestDistance = math.huge
+	local LocalPlayer = game.Players.LocalPlayer
+	local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-	for _, model in ipairs(carsFolder:GetChildren()) do
-		if model:IsA("Model") then
-			local station = model:FindFirstChild("car Spawne")
+	if not root then return nil end
+
+	for _, carModel in ipairs(carsFolder:GetChildren()) do
+		if carModel:IsA("Model") then
+			local station = carModel:FindFirstChild("car Spawne")
 			if station and station:FindFirstChild("Station") then
 				local driveSeat = station.Station:FindFirstChild("Drive")
-				if driveSeat and driveSeat:IsA("VehicleSeat") and driveSeat:IsDescendantOf(workspace) then
-					local distance = (game.LocalPlayer.Character.HumanoidRootPart.Position - driveSeat.Position).Magnitude
-					if distance < 10 and distance < shortestDistance then
+				if driveSeat and driveSeat:IsA("VehicleSeat") then
+					local distance = (root.Position - carModel:GetModelCFrame().Position).Magnitude
+					if distance < 15 and distance < shortestDistance then
 						shortestDistance = distance
-						nearestSeat = driveSeat
+						nearestCarModel = carModel
 					end
 				end
 			end
 		end
 	end
 
-	return nearestSeat
+	if nearestCarModel then
+		local driveSeat = nearestCarModel:FindFirstChild("car Spawne")
+		if driveSeat then
+			driveSeat = driveSeat:FindFirstChild("Station")
+			if driveSeat then
+				driveSeat = driveSeat:FindFirstChild("Drive")
+				if driveSeat and driveSeat:IsA("VehicleSeat") then
+					return nearestCarModel, driveSeat
+				end
+			end
+		end
+	end
+
+	return nil
 end
 
 local Button = TrollTab:CreateButton({
@@ -486,13 +503,13 @@ local Button = TrollTab:CreateButton({
 		if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
 		-- Step 1: Move to pre-drive position
-		character:MoveTo(Vector3.new(-822, 5, 326))
-		task.wait(1)
+		character:MoveTo(Vector3.new(-822, 3, 326))
+		task.wait(0.5)
 
 		-- Step 2: Find nearest drive seat and teleport to it
 		local seat = findNearestDriveSeat()
 		if seat then
-			character:MoveTo(seat.Position + Vector3.new(0, 3, 0))
+			character:MoveTo(seat.Position + Vector3.new(0, 0, 0))
 			task.wait(0.5)
 
 			-- Sit the player

@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 	Name = "Myanmar Water Festival - Water Hub 💦",
 	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
 	LoadingTitle = "Water Hub 💦",
-	LoadingSubtitle = "by Dev_Luna",
+	LoadingSubtitle = "by Dev_Smiley",
 	ShowText = "Water Hub 💦", -- for mobile users to unhide rayfield, change if you'd like
 	Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 

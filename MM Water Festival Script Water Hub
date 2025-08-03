@@ -454,46 +454,30 @@ local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
 local Label = TrollTab:CreateLabel("Void Teleport", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
 
 local function findNearestDriveSeat()
-	local carsFolder = workspace:FindFirstChild("Cars")
-	if not carsFolder then return nil end
+	local Players = game:GetService("Players")
+	local LocalPlayer = Players.LocalPlayer
+	local Character = LocalPlayer.Character
+	local HRP = Character and Character:FindFirstChild("HumanoidRootPart")
 
-	local nearestCarModel = nil
+	if not HRP then return end
+
+	local nearestSeat = nil
 	local shortestDistance = math.huge
-	local LocalPlayer = game.Players.LocalPlayer
-	local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-	if not root then return nil end
-
-	for _, carModel in ipairs(carsFolder:GetChildren()) do
-		if carModel:IsA("Model") then
-			local station = carModel:FindFirstChild("car Spawne")
-			if station and station:FindFirstChild("Station") then
-				local driveSeat = station.Station:FindFirstChild("Drive")
-				if driveSeat and driveSeat:IsA("VehicleSeat") then
-					local distance = (root.Position - carModel:GetModelCFrame().Position).Magnitude
-					if distance < 15 and distance < shortestDistance then
-						shortestDistance = distance
-						nearestCarModel = carModel
-					end
-				end
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("VehicleSeat") and obj.Name == "Drive" then
+			local distance = (HRP.Position - obj.Position).Magnitude
+			if distance <= 20 and distance < shortestDistance then
+				shortestDistance = distance
+				nearestSeat = obj
 			end
 		end
 	end
 
-	if nearestCarModel then
-		local driveSeat = nearestCarModel:FindFirstChild("car Spawne")
-		if driveSeat then
-			driveSeat = driveSeat:FindFirstChild("Station")
-			if driveSeat then
-				driveSeat = driveSeat:FindFirstChild("Drive")
-				if driveSeat and driveSeat:IsA("VehicleSeat") then
-					return nearestCarModel, driveSeat
-				end
-			end
-		end
+	if nearestSeat then
+		-- Move the player onto the seat
+		HRP.CFrame = nearestSeat.CFrame + Vector3.new(0, 1, 0)
 	end
-
-	return nil
 end
 
 local Button = TrollTab:CreateButton({

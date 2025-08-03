@@ -640,11 +640,10 @@ local Toggle = ESPTab:CreateToggle({
 
 --Artifacts Teleport
 
--- Outside the button, store this in a shared state
-local artifactMemory = {}  -- Stores visited artifacts
-local allArtifacts = {}    -- Stores all valid artifacts
+-- Outside the button
+local artifactMemory = {}
+local allArtifacts = {}
 
--- Utility to refresh artifact list
 local function refreshArtifacts()
 	allArtifacts = {}
 	local planets = workspace:FindFirstChild("Planets")
@@ -666,36 +665,36 @@ local Button = ESPTab:CreateButton({
 	Name = "Artifact Teleport",
 	Callback = function()
 		local player = game.Players.LocalPlayer
-		local char = player.Character
-		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 		if not hrp then return end
 
-		-- Refresh all artifacts if empty
 		if #allArtifacts == 0 then
 			refreshArtifacts()
 		end
 
-		-- Reset memory if all have been visited
+		-- Reset if all have been used
 		if #artifactMemory >= #allArtifacts then
 			artifactMemory = {}
 		end
 
-		-- Find unvisited artifacts
+		-- Filter: only unused and far-enough artifacts
 		local available = {}
 		for _, artifact in ipairs(allArtifacts) do
-			if not table.find(artifactMemory, artifact) then
-				table.insert(available, artifact)
+			if not table.find(artifactMemory, artifact) and artifact:IsDescendantOf(workspace) then
+				local dist = (artifact.Position - hrp.Position).Magnitude
+				if dist >= 150 then
+					table.insert(available, artifact)
+				end
 			end
 		end
 
+		-- Pick a random one and teleport to it
 		if #available > 0 then
 			local chosen = available[math.random(1, #available)]
 			table.insert(artifactMemory, chosen)
 
-			local direction = (hrp.Position - chosen.Position).Unit
-			local targetPos = chosen.Position + direction * 150
-
-			hrp.CFrame = CFrame.new(targetPos)
+			local teleportPos = chosen.Position + Vector3.new(0, 3, 0)
+			hrp.CFrame = CFrame.new(teleportPos)
 		end
 	end,
 })

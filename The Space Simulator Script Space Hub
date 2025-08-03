@@ -644,7 +644,6 @@ local Toggle = ESPTab:CreateToggle({
 local artifactMemory = {}
 local allArtifacts = {}
 
--- Refresh artifact list
 local function refreshArtifacts()
 	allArtifacts = {}
 	local planets = workspace:FindFirstChild("Planets")
@@ -674,28 +673,29 @@ local Button = ESPTab:CreateButton({
 			refreshArtifacts()
 		end
 
-		-- Reset memory if all used
-		if #artifactMemory >= #allArtifacts then
-			artifactMemory = {}
-		end
-
-		-- Filter unvisited and nearby artifacts
+		-- Filter unvisited and within 150 studs
 		local available = {}
 		for _, artifact in ipairs(allArtifacts) do
-			local dist = (artifact.Position - hrp.Position).Magnitude
-			if dist <= 150 and not table.find(artifactMemory, artifact) then
-				table.insert(available, artifact)
+			if not table.find(artifactMemory, artifact) then
+				local distance = (hrp.Position - artifact.Position).Magnitude
+				if distance <= 150 then
+					table.insert(available, artifact)
+				end
 			end
 		end
 
-		if #available > 0 then
-			local chosen = available[math.random(1, #available)]
-			table.insert(artifactMemory, chosen)
-
-			-- Teleport player near artifact
-			local newPos = chosen.Position + Vector3.new(0, 3, 0)
-			hrp.CFrame = CFrame.new(newPos)
+		if #available == 0 then
+			artifactMemory = {} -- Reset memory
+			refreshArtifacts()  -- Optionally refresh artifacts again
+			return
 		end
+
+		local chosen = available[math.random(1, #available)]
+		table.insert(artifactMemory, chosen)
+
+		-- Teleport player right next to the artifact
+		local targetPos = chosen.Position + Vector3.new(0, 3, 0) -- Slightly above
+		hrp.CFrame = CFrame.new(targetPos)
 	end,
 })
 

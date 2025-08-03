@@ -114,4 +114,142 @@ local Input = PlayerTab:CreateInput({
 	end,
 })
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Apartments",
+	Callback = function()
+		local targets = {"Apartment", "Apartment2"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Fences",
+	Callback = function()
+		local targets = {"Fences"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Map (Folder)",
+	Callback = function()
+		local targets = {"Map"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Roads",
+	Callback = function()
+		local targets = {"Road"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Apartments",
+	Callback = function()
+		local targets = {"Apartment", "Apartment2"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Spawn Decorations",
+	Callback = function()
+		local targets = {"Spawn"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Trees And Other",
+	Callback = function()
+		local targets = {"Trees", "Traffic lights", "Tower", "tree floors"}
+
+		for _, name in ipairs(targets) do
+			local folder = game.Workspace:FindFirstChild(name)
+			if folder and folder:IsA("Folder") then
+				folder:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Other Models",
+	Callback = function()
+		local targets = {"ComputerSystem", "Grass", "Grass", "Model", "Model", "Rocks", "Speaker"}
+
+		for _, name in ipairs(targets) do
+			local model = game.Workspace:FindFirstChild(name)
+			if model and model:IsA("Model") then
+				model:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Remove Mountains",
+	Callback = function()
+		local targets = {"Mountain", "Mountain"}
+
+		for _, name in ipairs(targets) do
+			local meshpart = game.Workspace:FindFirstChild(name)
+			if meshpart and meshpart:IsA("MeshPart") then
+				meshpart:Destroy()
+			end
+		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Clean Lighting",
+	Callback = function()
+		local Lighting = game:GetService("Lighting")
+		for _, obj in ipairs(Lighting:GetChildren()) do
+			obj:Destroy()
+		end
+	end,
+})

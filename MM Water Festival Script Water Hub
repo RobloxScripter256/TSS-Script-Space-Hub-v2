@@ -322,7 +322,7 @@ local Button = CSettingsTab:CreateButton({
 local AAuraTab = Window:CreateTab("Admin Aura Settings", 4483362458) -- Title, Image
 
 local Toggle = AAuraTab:CreateToggle({
-	Name = "Admin Aurq Button Visible",
+	Name = "Admin Aura Button Visible",
 	CurrentValue = false,
 	Flag = "Toggle1",
 	Callback = function(Value)
@@ -335,6 +335,30 @@ local Toggle = AAuraTab:CreateToggle({
 
 		if button and button:IsA("ImageButton") then
 			button.Visible = Value
+		end
+	end,
+})
+
+
+local Toggle2 = AAuraTab:CreateToggle({
+	Name = "Unlock All Admin Auras",
+	CurrentValue = false,
+	Flag = "Toggle2",
+	Callback = function(Value)
+		local root = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+			:WaitForChild("MainGuis")
+			:WaitForChild("Aura")
+			:WaitForChild("Frame")
+			:WaitForChild("ImageLabel")
+			:WaitForChild("AdminFrame")
+
+		for _, imageButton in ipairs(root:GetChildren()) do
+			if imageButton:IsA("ImageButton") then
+				local adminLock = imageButton:FindFirstChild("AdminLock")
+				if adminLock and adminLock:IsA("ImageButton") then
+					adminLock.Visible = not Value -- false if toggled on, true if toggled off
+				end
+			end
 		end
 	end,
 })

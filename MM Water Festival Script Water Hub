@@ -479,8 +479,8 @@ local function findNearestDriveSeat()
 	return nearestSeat
 end
 
-local Button = CSettingsTab:CreateButton({
-	Name = "Drive Teleport Ride",
+local Button = TrollTab:CreateButton({
+	Name = "Void Bring ALL",
 	Callback = function()
 		local character = game.Players.LocalPlayer.Character
 		if not character or not character:FindFirstChild("HumanoidRootPart") then return end

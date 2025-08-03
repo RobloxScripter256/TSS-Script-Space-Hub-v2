@@ -635,3 +635,10 @@ local Toggle = ESPTab:CreateToggle({
 		end
 	end,
 })
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
+
+local Label = TrollTab:CreateLabel("We are working on this D:", 4483362458, Color3.fromRGB(255, 170, 255), false) -- Title, Icon, Color, IgnoreTheme

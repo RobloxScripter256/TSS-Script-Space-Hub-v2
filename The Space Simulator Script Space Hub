@@ -726,12 +726,12 @@ local Button = OtherTpTab:CreateButton({
 			-- Teleport under Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, -10, 0)
 			isInsideMakeMake = true
-			self:SetText("Teleport Outside MakeMake Cave")
+			self:Set("Teleport Outside MakeMake Cave")
 		else
 			-- Teleport above Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, 20, 0) -- average between 30-40
 			isInsideMakeMake = false
-			self:SetText("Teleport Inside MakeMake Cave")
+			self:Set("Teleport Inside MakeMake Cave")
 		end
 	end,
 })

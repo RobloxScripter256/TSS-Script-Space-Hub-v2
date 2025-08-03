@@ -254,7 +254,7 @@ local Button = CSettingsTab:CreateButton({
 		local Players = game:GetService("Players")
 		local LocalPlayer = Players.LocalPlayer
 
-		-- Clean workspace
+		-- Clean workspace (excluding player characters and folders)
 		for _, item in ipairs(workspace:GetChildren()) do
 			local isPlayerChar = false
 
@@ -265,14 +265,15 @@ local Button = CSettingsTab:CreateButton({
 				end
 			end
 
-			if not isPlayerChar then
-				if not item:IsA("Folder") then
-					if item:IsA("Model") or item:IsA("Part") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
-						item:Destroy()
-					end
+			if not isPlayerChar and not item:IsA("Folder") then
+				if item:IsA("Model") or item:IsA("Part") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
+					item:Destroy()
 				end
 			end
 		end
+
+		-- Clear terrain (client-side only in a LocalScript)
+		workspace.Terrain:Clear()
 
 		-- Kill the local player
 		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then

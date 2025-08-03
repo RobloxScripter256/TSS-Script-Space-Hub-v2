@@ -1,5 +1,5 @@
 local allowedPlaceIds = {
-	15027718878, -- Replace with the allowed PlaceId(s)
+	12649095253, -- Replace with the allowed PlaceId(s)
 }
 
 if not table.find(allowedPlaceIds, game.PlaceId) then
@@ -10,11 +10,11 @@ end
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-	Name = "Water Hub 💦",
+	Name = "Myanmar Water Festival - Water Hub 💦",
 	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
 	LoadingTitle = "Water Hub 💦",
 	LoadingSubtitle = "by Dev_Luna",
-	ShowText = "Myanmar Water Festival", -- for mobile users to unhide rayfield, change if you'd like
+	ShowText = "Water Hub 💦", -- for mobile users to unhide rayfield, change if you'd like
 	Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
 	ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
@@ -47,4 +47,25 @@ local Window = Rayfield:CreateWindow({
 })
 
 local PlayerTab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
-local Section = PlayerTab:CreateSection("Section Example")
+
+local Input = PlayerTab:CreateInput({
+	Name = "Walk Speed",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input1",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = Text-- The function that takes place when the input is changed
+	end,
+})
+
+local Input = PlayerTab:CreateInput({
+	Name = "Hip Height",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input2",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").HipHeight = Text-- The function that takes place when the input is changed
+	end,
+})

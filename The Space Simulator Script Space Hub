@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 	Name = "The Space Simulator - Space Hub 🪐",
 	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
 	LoadingTitle = "Space Hub",
-	LoadingSubtitle = "by Smiley",
+	LoadingSubtitle = "by Dev_Smiley",
 	ShowText = "Space Hub 🪐", -- for mobile users to unhide rayfield, change if you'd like
 	Theme = "Bloom", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
@@ -638,6 +638,67 @@ local Toggle = ESPTab:CreateToggle({
 	end,
 })
 
+--Artifacts Teleport
+
+-- Outside the button, store this in a shared state
+local artifactMemory = {}  -- Stores visited artifacts
+local allArtifacts = {}    -- Stores all valid artifacts
+
+-- Utility to refresh artifact list
+local function refreshArtifacts()
+	allArtifacts = {}
+	local planets = workspace:FindFirstChild("Planets")
+	if planets then
+		for _, model in ipairs(planets:GetChildren()) do
+			local artifacts = model:FindFirstChild("Artifacts")
+			if artifacts then
+				for _, part in ipairs(artifacts:GetDescendants()) do
+					if part:IsA("BasePart") then
+						table.insert(allArtifacts, part)
+					end
+				end
+			end
+		end
+	end
+end
+
+local Button = ESPTab:CreateButton({
+	Name = "Artifact Teleport",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+
+		-- Refresh all artifacts if empty
+		if #allArtifacts == 0 then
+			refreshArtifacts()
+		end
+
+		-- Reset memory if all have been visited
+		if #artifactMemory >= #allArtifacts then
+			artifactMemory = {}
+		end
+
+		-- Find unvisited artifacts
+		local available = {}
+		for _, artifact in ipairs(allArtifacts) do
+			if not table.find(artifactMemory, artifact) then
+				table.insert(available, artifact)
+			end
+		end
+
+		if #available > 0 then
+			local chosen = available[math.random(1, #available)]
+			table.insert(artifactMemory, chosen)
+
+			local direction = (hrp.Position - chosen.Position).Unit
+			local targetPos = chosen.Position + direction * 150
+
+			hrp.CFrame = CFrame.new(targetPos)
+		end
+	end,
+})
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

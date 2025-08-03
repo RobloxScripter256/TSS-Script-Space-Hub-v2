@@ -491,7 +491,7 @@ local Button = TrollTab:CreateButton({
 
 		-- Step 1: Move to start position
 		hrp.CFrame = CFrame.new(-822, 3, 326)
-		task.wait(1)
+		task.wait(0.5)
 
 		-- Step 2: Find nearest Drive seat within 20 studs
 		local nearestSeat

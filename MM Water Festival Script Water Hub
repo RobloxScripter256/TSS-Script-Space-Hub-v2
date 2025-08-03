@@ -246,7 +246,7 @@ local Button = CSettingsTab:CreateButton({
 	end,
 })
 
-local Label = CSettingsTab:CreateLabel("Clean The Whole Workspace And It Will Create A New Baseplate", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+local Label = CSettingsTab:CreateLabel("Clean The Whole Workspace And It Will Create A New Baseplate (Please Reset When You Clicked It)", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
 
 local Button = CSettingsTab:CreateButton({
 	Name = "Clean Workspace",
@@ -292,7 +292,7 @@ local Button = CSettingsTab:CreateButton({
 		baseplate.Name = "Baseplate"
 		baseplate.Anchored = true
 		baseplate.Size = Vector3.new(2042, 26, 2042)
-		baseplate.Position = Vector3.new(0, -13, 0)
+		baseplate.Position = Vector3.new(0, -10, 0)
 		baseplate.Material = Enum.Material.SmoothPlastic
 		baseplate.Color = Color3.fromRGB(163, 162, 165)
 		baseplate.TopSurface = Enum.SurfaceType.Smooth
@@ -313,6 +313,28 @@ local Button = CSettingsTab:CreateButton({
 		local Lighting = game:GetService("Lighting")
 		for _, obj in ipairs(Lighting:GetChildren()) do
 			obj:Destroy()
+		end
+	end,
+})
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local AAuraTab = Window:CreateTab("Admin Aura Settings", 4483362458) -- Title, Image
+
+local Toggle = AAuraTab:CreateToggle({
+	Name = "Admin Aurq Button Visible",
+	CurrentValue = false,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		local button = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+			:WaitForChild("MainGuis")
+			:WaitForChild("Aura")
+			:WaitForChild("Frame")
+			:WaitForChild("ImageLabel")
+			:FindFirstChild("AdminButton")
+
+		if button and button:IsA("ImageButton") then
+			button.Visible = Value
 		end
 	end,
 })

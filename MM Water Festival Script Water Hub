@@ -118,6 +118,8 @@ local Input = PlayerTab:CreateInput({
 
 local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
 
+local Label = CSettingsTab:CreateLabel("To Fix Lag Remove Them If You Want", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+
 local Button = CSettingsTab:CreateButton({
 	Name = "Remove Apartments",
 	Callback = function()
@@ -241,6 +243,49 @@ local Button = CSettingsTab:CreateButton({
 				meshpart:Destroy()
 			end
 		end-- The function that takes place when the button is pressed
+	end,
+})
+
+local Label = CSettingsTab:CreateLabel("Clean The Whole Workspace And It Will Create A New Baseplate", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Clean Workspace",
+	Callback = function()
+		local Players = game:GetService("Players")
+		local LocalPlayer = Players.LocalPlayer
+
+		-- Clean workspace
+		for _, item in ipairs(workspace:GetChildren()) do
+			local isPlayerChar = false
+
+			for _, player in ipairs(Players:GetPlayers()) do
+				if player.Character == item then
+					isPlayerChar = true
+					break
+				end
+			end
+
+			if not isPlayerChar then
+				if item:IsA("Model") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
+					item:Destroy()
+				end
+			end
+		end
+
+		-- Kill the local player
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+			LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0
+		end
+
+		-- Create new baseplate
+		local baseplate = Instance.new("Part")
+		baseplate.Name = "Baseplate"
+		baseplate.Anchored = true
+		baseplate.Size = Vector3.new(2042, 10, 2042)
+		baseplate.Position = Vector3.new(0, -11, 0)
+		baseplate.Material = Enum.Material.SmoothPlastic
+		baseplate.Color = Color3.fromRGB(163, 162, 165) -- Typical baseplate gray
+		baseplate.Parent = workspace
 	end,
 })
 

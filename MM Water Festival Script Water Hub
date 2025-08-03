@@ -272,23 +272,25 @@ local Button = CSettingsTab:CreateButton({
 			end
 		end
 
-		-- Clear terrain (client-side only in a LocalScript)
+		-- Clear terrain (local player view only)
 		workspace.Terrain:Clear()
-
-		-- Kill the local player
-		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-			LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0
-		end
+		workspace.Terrain:FindFirstChildOfClass("Clouds"):Destroy()
 
 		-- Create new baseplate
 		local baseplate = Instance.new("Part")
 		baseplate.Name = "Baseplate"
 		baseplate.Anchored = true
-		baseplate.Size = Vector3.new(2042, 10, 2042)
-		baseplate.Position = Vector3.new(0, -11, 0)
+		baseplate.Size = Vector3.new(2042, 26, 2042) -- Changed Y size to 26
+		baseplate.Position = Vector3.new(0, -13, 0) -- Lowered to match new height
 		baseplate.Material = Enum.Material.SmoothPlastic
 		baseplate.Color = Color3.fromRGB(163, 162, 165)
 		baseplate.Parent = workspace
+
+		-- Optional: Reset camera focus to prevent animation/camera bug
+		LocalPlayer.CharacterAdded:Connect(function(char)
+			repeat wait() until char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart")
+			workspace.CurrentCamera.CameraSubject = char:FindFirstChild("Humanoid")
+		end)
 	end,
 })
 

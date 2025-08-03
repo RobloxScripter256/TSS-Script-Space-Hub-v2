@@ -46,7 +46,7 @@ local Window = Rayfield:CreateWindow({
 	}
 })
 
-local PlayerTab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
+local PlayerTab = Window:CreateTab("Player Settings", 4483362458) -- Title, Image
 
 local Input = PlayerTab:CreateInput({
 	Name = "Walk Speed",
@@ -69,3 +69,49 @@ local Input = PlayerTab:CreateInput({
 		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").HipHeight = Text-- The function that takes place when the input is changed
 	end,
 })
+
+local Input = PlayerTab:CreateInput({
+	Name = "Health",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input3",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = Text-- The function that takes place when the input is changed
+	end,
+})
+
+local Input = PlayerTab:CreateInput({
+	Name = "Max Health",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input4",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").MaxHealth = Text-- The function that takes place when the input is changed
+	end,
+})
+
+local Input = PlayerTab:CreateInput({
+	Name = "Max Slope Angle",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input5",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").MaxSlopeAngle = Text-- The function that takes place when the input is changed
+	end,
+})
+
+local Input = PlayerTab:CreateInput({
+	Name = "Jump Power",
+	CurrentValue = "",
+	PlaceholderText = "Input Number",
+	RemoveTextAfterFocusLost = false,
+	Flag = "Input6",
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").JumpPower = Text-- The function that takes place when the input is changed
+	end,
+})
+
+local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image

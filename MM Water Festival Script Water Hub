@@ -266,8 +266,10 @@ local Button = CSettingsTab:CreateButton({
 			end
 
 			if not isPlayerChar then
-				if item:IsA("Model") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
-					item:Destroy()
+				if not item:IsA("Folder") then
+					if item:IsA("Model") or item:IsA("Part") or item:IsA("MeshPart") or item:IsA("UnionOperation") then
+						item:Destroy()
+					end
 				end
 			end
 		end
@@ -284,7 +286,7 @@ local Button = CSettingsTab:CreateButton({
 		baseplate.Size = Vector3.new(2042, 10, 2042)
 		baseplate.Position = Vector3.new(0, -11, 0)
 		baseplate.Material = Enum.Material.SmoothPlastic
-		baseplate.Color = Color3.fromRGB(163, 162, 165) -- Typical baseplate gray
+		baseplate.Color = Color3.fromRGB(163, 162, 165)
 		baseplate.Parent = workspace
 	end,
 })

@@ -710,8 +710,9 @@ local Button = OtherTpTab:CreateButton({
 local Label = OtherTpTab:CreateLabel("Caves ( You Must Inside That Planet To Teleport )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 local isInsideMakeMake = false  -- Track toggle state
+local Button2  -- declare it first
 
-local Button = OtherTpTab:CreateButton({
+Button2 = OtherTpTab:CreateButton({
 	Name = "Teleport Inside MakeMake Cave",
 	Callback = function()
 		local player = game.Players.LocalPlayer
@@ -726,12 +727,12 @@ local Button = OtherTpTab:CreateButton({
 			-- Teleport under Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, -10, 0)
 			isInsideMakeMake = true
-			Button:Set("Teleport Outside Makemake Cave")
+			Button2:Set("Teleport Outside MakeMake Cave")
 		else
 			-- Teleport above Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, 35, 0)
 			isInsideMakeMake = false
-			Button:Set("Teleport Inside Makemake Cave")
+			Button2:Set("Teleport Inside MakeMake Cave")
 		end
 	end,
 })

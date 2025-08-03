@@ -46,6 +46,8 @@ local Window = Rayfield:CreateWindow({
 	}
 })
 
+local RunService = game:GetService("RunService")
+
 local PlayerTab = Window:CreateTab("Player Settings", 4483362458) -- Title, Image
 
 local Input = PlayerTab:CreateInput({
@@ -121,7 +123,7 @@ local Button = PlayerTab:CreateButton({
 	Callback = function()
 		local placeId = game.PlaceId
 		local jobId = game.JobId
-		TeleportService:TeleportToPlaceInstance(placeId, jobId, LocalPlayer)
+		TeleportService:TeleportToPlaceInstance(placeId, jobId, game.Players.LocalPlayer)
 	end,
 })
 
@@ -441,6 +443,86 @@ local Button = ShopTab:CreateButton({
 					clonedTool.Parent = game.Players.LocalPlayer:WaitForChild("Backpack")
 				end
 			end
+		end
+	end,
+})
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
+
+local Label = TrollTab:CreateLabel("Void Teleport", 4483362458, Color3.fromRGB(85, 170, 127), false) -- Title, Icon, Color, IgnoreTheme
+
+local function findNearestDriveSeat()
+	local carsFolder = workspace:FindFirstChild("Cars")
+	if not carsFolder then return nil end
+
+	local nearestSeat = nil
+	local shortestDistance = math.huge
+
+	for _, model in ipairs(carsFolder:GetChildren()) do
+		if model:IsA("Model") then
+			local station = model:FindFirstChild("car Spawne")
+			if station and station:FindFirstChild("Station") then
+				local driveSeat = station.Station:FindFirstChild("Drive")
+				if driveSeat and driveSeat:IsA("VehicleSeat") and driveSeat:IsDescendantOf(workspace) then
+					local distance = (game.LocalPlayer.Character.HumanoidRootPart.Position - driveSeat.Position).Magnitude
+					if distance < 10 and distance < shortestDistance then
+						shortestDistance = distance
+						nearestSeat = driveSeat
+					end
+				end
+			end
+		end
+	end
+
+	return nearestSeat
+end
+
+local Button = CSettingsTab:CreateButton({
+	Name = "Drive Teleport Ride",
+	Callback = function()
+		local character = game.Players.LocalPlayer.Character
+		if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+		-- Step 1: Move to pre-drive position
+		character:MoveTo(Vector3.new(-822, 5, 326))
+		task.wait(1)
+
+		-- Step 2: Find nearest drive seat and teleport to it
+		local seat = findNearestDriveSeat()
+		if seat then
+			character:MoveTo(seat.Position + Vector3.new(0, 3, 0))
+			task.wait(0.5)
+
+			-- Sit the player
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				humanoid.Sit = true
+			end
+
+			-- Step 3: Ride to all players
+			local root = character:FindFirstChild("HumanoidRootPart")
+			if root then
+				for _, player in ipairs(game.Players:GetPlayers()) do
+					if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						seat.CFrame = player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+						task.wait(0.1)
+					end
+				end
+			end
+
+			-- Step 4: Teleport seat to below
+			seat.CFrame = CFrame.new(0, -30, 0)
+			task.wait(0.5)
+
+			-- Step 5: Unseat
+			if humanoid then
+				humanoid.Sit = false
+			end
+
+			-- Step 6: Move back to surface
+			character:MoveTo(Vector3.new(0, 10, 0))
 		end
 	end,
 })

@@ -818,26 +818,17 @@ local function startTeleportLoop()
 
 		print("Found seat:", targetSeat:GetFullName())
 
-		-- First teleport player ONCE to seat position (above seat)
-		humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
-
-		-- Wait until player sits
-		print("Waiting for player to sit...")
-		repeat
-			task.wait(0.2)
-		until humanoid.Sit or not teleporting
-
-		if not teleporting then
-			print("Teleport stopped before sitting.")
-			return
-		end
-
-		print("Player sat down! Starting teleport loop.")
-
-		-- Now loop teleport while toggle is still ON
 		while teleporting do
-			if character and character.Parent then
+			if not humanoid.Sit then
+				-- If not sitting, teleport player ABOVE the seat to encourage sitting
 				humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
+				-- print("Player not sitting, teleporting to seat...")
+			else
+				-- Player is sitting! Teleport seat + player TO Skin repeatedly
+				local skinCFrame = skinPart.CFrame + Vector3.new(0, 3, 0)
+				targetSeat.CFrame = skinCFrame
+				humanoidRootPart.CFrame = skinCFrame + Vector3.new(0, 2, 0)
+				-- print("Player sitting, teleporting to Skin with seat...")
 			end
 			task.wait(0.5)
 		end
@@ -855,7 +846,6 @@ local function stopTeleportLoop()
 	end
 end
 
--- Your toggle callback example:
 local Toggle = PlanetTpTab:CreateToggle({
 	Name = "Earth Teleport",
 	CurrentValue = false,

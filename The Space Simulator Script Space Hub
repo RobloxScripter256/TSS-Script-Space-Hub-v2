@@ -738,9 +738,10 @@ Button2 = OtherTpTab:CreateButton({
 })
 
 local isInsideSedna = false
-local Button3
+loclocal isInsideSedna = false
+local ButtonSedna
 
-Button3 = OtherTpTab:CreateButton({
+ButtonSedna = OtherTpTab:CreateButton({
 	Name = "Teleport Inside Sedna Cave",
 	Callback = function()
 		local player = game.Players.LocalPlayer
@@ -752,13 +753,15 @@ Button3 = OtherTpTab:CreateButton({
 		if not center or not center:IsA("BasePart") then return end
 
 		if not isInsideSedna then
+			-- Teleport under Sedna center
 			hrp.CFrame = center.CFrame * CFrame.new(0, -10, 0)
 			isInsideSedna = true
-			Button3.ButtonText.Text = "Teleport Outside Sedna Cave"
+			ButtonSedna:Set("Teleport Outside Sedna Cave")
 		else
+			-- Teleport above Sedna center
 			hrp.CFrame = center.CFrame * CFrame.new(0, 35, 0)
 			isInsideSedna = false
-			Button3.ButtonText.Text = "Teleport Inside Sedna Cave"
+			ButtonSedna:Set("Teleport Inside Sedna Cave")
 		end
 	end,
 })

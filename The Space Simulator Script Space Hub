@@ -741,7 +741,7 @@ Button2 = OtherTpTab:CreateButton({
 local isInsideSedna = false  -- Track toggle state
 local Button3  -- declare it first
 
-Button2 = OtherTpTab:CreateButton({
+Button3 = OtherTpTab:CreateButton({
 	Name = "Teleport Inside Sedna Cave",
 	Callback = function()
 		local player = game.Players.LocalPlayer

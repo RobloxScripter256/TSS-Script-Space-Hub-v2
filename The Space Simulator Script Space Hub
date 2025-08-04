@@ -708,7 +708,7 @@ local function stopTeleportLoop()
 	end
 end
 
-local Toggle = OtherTab:CreateToggle({
+local Toggle = OtherTpTab:CreateToggle({
 	Name = "Earth Teleport",
 	CurrentValue = false,
 	Flag = "Toggle1",
@@ -845,9 +845,9 @@ Button3 = OtherTpTab:CreateButton({
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 
-
-
 local Label = PlanetTpTab:CreateLabel("Bring Ships", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

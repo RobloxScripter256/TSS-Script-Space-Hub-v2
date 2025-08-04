@@ -131,6 +131,8 @@ local Toggle = MSettingsTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle1",
 	Callback = function(Value)
+		if not Value then return end -- Skip loop if toggle off
+
 		local Players = game:GetService("Players")
 		local player = Players.LocalPlayer
 		local character = player.Character or player.CharacterAdded:Wait()
@@ -144,16 +146,13 @@ local Toggle = MSettingsTab:CreateToggle({
 		}
 
 		local planetsFolder = workspace:FindFirstChild("Planets")
-		if not planetsFolder then
-			warn("Planets folder not found in Workspace.")
-			return
-		end
+		if not planetsFolder then return end
 
-		-- Find closest planet model
 		local nearestPlanet, minDistance = nil, math.huge
 		for _, model in pairs(planetsFolder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("Skin") then
-				local dist = (model.Center.Position - hrp.Position).Magnitude
+			local skin = model:FindFirstChild("Skin")
+			if model:IsA("Model") and skin then
+				local dist = (skin.Position - hrp.Position).Magnitude
 				if dist < minDistance and dist <= 200 then
 					nearestPlanet = model
 					minDistance = dist
@@ -161,30 +160,16 @@ local Toggle = MSettingsTab:CreateToggle({
 			end
 		end
 
-		if not nearestPlanet then
-			warn("No nearby planet found within 200 studs.")
-			return
-		end
+		if not nearestPlanet then return end
 
 		local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
-		if not mineralsFolder then
-			warn("No Minerals folder in:", nearestPlanet.Name)
-			return
-		end
+		if not mineralsFolder then return end
 
 		for _, part in ipairs(mineralsFolder:GetDescendants()) do
 			if allowedClasses[part.ClassName] and part:GetAttribute("hitpoints") ~= nil then
 				local dist = (part.Position - hrp.Position).Magnitude
 				if dist <= 200 then
-					if Value then
-						-- Toggle ON: Set hitpoints to 1
-						if part:GetAttribute("hitpoints") ~= 1 then
-							part:SetAttribute("hitpoints", 1)
-						end
-					else
-						-- Toggle OFF: Reset hitpoints to 100
-						part:SetAttribute("hitpoints", 100)
-					end
+					part:SetAttribute("hitpoints", 1)
 				end
 			end
 		end
@@ -196,7 +181,7 @@ local Toggle = MSettingsTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle2",
 	Callback = (function()
-		local modifiedParts = {}  -- Store original minPickaxeLevel values
+		local modifiedParts = {}
 
 		return function(Value)
 			local Players = game:GetService("Players")
@@ -212,16 +197,13 @@ local Toggle = MSettingsTab:CreateToggle({
 			}
 
 			local planetsFolder = workspace:FindFirstChild("Planets")
-			if not planetsFolder then
-				warn("Planets folder not found in Workspace.")
-				return
-			end
+			if not planetsFolder then return end
 
-			-- Find closest planet within 200 studs
 			local nearestPlanet, minDistance = nil, math.huge
 			for _, model in pairs(planetsFolder:GetChildren()) do
-				if model:IsA("Model") and model:FindFirstChild("Center") then
-					local dist = (model.Center.Position - hrp.Position).Magnitude
+				local skin = model:FindFirstChild("Skin")
+				if model:IsA("Model") and skin then
+					local dist = (skin.Position - hrp.Position).Magnitude
 					if dist < minDistance and dist <= 200 then
 						nearestPlanet = model
 						minDistance = dist
@@ -229,19 +211,12 @@ local Toggle = MSettingsTab:CreateToggle({
 				end
 			end
 
-			if not nearestPlanet then
-				warn("No nearby planet found within 200 studs.")
-				return
-			end
+			if not nearestPlanet then return end
 
 			local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
-			if not mineralsFolder then
-				warn("No Minerals folder in:", nearestPlanet.Name)
-				return
-			end
+			if not mineralsFolder then return end
 
 			if Value then
-				-- Toggle ON: Set minPickaxeLevel to 1
 				for _, part in ipairs(mineralsFolder:GetDescendants()) do
 					if allowedClasses[part.ClassName] then
 						local level = part:GetAttribute("minPickaxeLevel")
@@ -255,7 +230,6 @@ local Toggle = MSettingsTab:CreateToggle({
 					end
 				end
 			else
-				-- Toggle OFF: Restore all previously modified parts
 				for part, originalLevel in pairs(modifiedParts) do
 					if part and part:IsDescendantOf(game) then
 						part:SetAttribute("minPickaxeLevel", originalLevel)
@@ -283,16 +257,15 @@ local function AstartTeleportLoop()
 
 		local planetsFolder = workspace:FindFirstChild("Planets")
 		if not planetsFolder then
-			warn("Planets folder not found in Workspace.")
 			teleporting = false
 			return
 		end
 
-		-- Find closest planet with Center within 200 studs
 		local nearestPlanet, minDistance = nil, math.huge
 		for _, model in pairs(planetsFolder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("Center") then
-				local dist = (model.Center.Position - hrp.Position).Magnitude
+			local skin = model:FindFirstChild("Skin")
+			if model:IsA("Model") and skin then
+				local dist = (skin.Position - hrp.Position).Magnitude
 				if dist < minDistance and dist <= 200 then
 					nearestPlanet = model
 					minDistance = dist
@@ -301,14 +274,12 @@ local function AstartTeleportLoop()
 		end
 
 		if not nearestPlanet then
-			warn("No nearby planet found within 200 studs.")
 			teleporting = false
 			return
 		end
 
 		local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
 		if not mineralsFolder then
-			warn("No Minerals folder in:", nearestPlanet.Name)
 			teleporting = false
 			return
 		end
@@ -321,7 +292,6 @@ local function AstartTeleportLoop()
 		end
 
 		if #parts == 0 then
-			warn("No parts found inside Minerals folder.")
 			teleporting = false
 			return
 		end
@@ -332,28 +302,19 @@ local function AstartTeleportLoop()
 		while teleporting do
 			for i, part in ipairs(parts) do
 				if not teleporting then break end
-
-				-- Avoid teleporting to the same part twice in a row
 				if i == lastIndex then
-					i = (i % #parts) + 1  -- move to next index safely
+					i = (i % #parts) + 1
 				end
-
 				lastIndex = i
-
-				-- Teleport player slowly (instant here, you can tween if you want smooth)
-				hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0) -- teleport a bit above the part
-
-				task.wait(1) -- wait 1 second before next teleport
+				hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+				task.wait(1)
 			end
 
 			if not teleporting then break end
 
-			-- After finishing all parts, teleport back to start slowly
 			hrp.CFrame = startCFrame + Vector3.new(0, 3, 0)
 			task.wait(1)
 		end
-
-		print("Teleport loop stopped.")
 	end)
 
 	coroutine.resume(teleportCoroutine)
@@ -362,9 +323,9 @@ end
 local function AstopTeleportLoop()
 	if teleporting then
 		teleporting = false
-		print("Teleport loop stopped manually.")
 	end
 end
+
 
 local Toggle3 = MSettingsTab:CreateToggle({
 	Name = "Teleport To Resources ( You Must Inside Planets )",

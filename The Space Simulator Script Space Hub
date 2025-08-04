@@ -636,9 +636,94 @@ local Toggle = ESPTab:CreateToggle({
 
 local OtherTpTab = Window:CreateTab("Other Teleport", 4483362458) -- Title, Image
 
-local Label = OtherTpTab:CreateLabel("Artifacts", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+local Label = OtherTpTab:CreateLabel("Earth Teleport ( Require Shuttle )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+--Earth Functions And Button Toggle
+
+local teleporting = false
+local teleportCoroutine
+
+local function startTeleportLoop()
+	if teleporting then return end
+	teleporting = true
+
+	teleportCoroutine = coroutine.create(function()
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+		local targetPos = Vector3.new(-3300, 31, -1407)
+		local searchRadius = 20
+
+		local function findNearbySeat()
+			for _, part in pairs(workspace:GetDescendants()) do
+				if (part:IsA("Seat") or part:IsA("VehicleSeat")) and part:IsA("BasePart") then
+					if (part.Position - targetPos).Magnitude <= searchRadius then
+						return part
+					end
+				end
+			end
+			return nil
+		end
+
+		local targetSeat = findNearbySeat()
+
+		if not targetSeat then
+			warn("No seat found within 20 studs of target position!")
+			teleporting = false
+			-- Toggle OFF automatically
+			OtherTpTab.Flags["Toggle1"] = false
+			return
+		end
+
+		print("Found seat:", targetSeat:GetFullName())
+
+		while teleporting do
+			if not humanoid.Sit then
+				-- Teleport player above seat until seated
+				humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
+			else
+				print("Player is seated! Auto turning off.")
+				teleporting = false
+				-- Toggle OFF automatically
+				OtherTpTab.Flags["Toggle1"] = false
+				break
+			end
+			task.wait(0.3)
+		end
+
+		print("Teleport loop ended.")
+	end)
+
+	coroutine.resume(teleportCoroutine)
+end
+
+local function stopTeleportLoop()
+	if teleporting then
+		teleporting = false
+		print("Teleport loop stopped manually.")
+	end
+end
+
+local Toggle = OtherTab:CreateToggle({
+	Name = "Earth Teleport",
+	CurrentValue = false,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		if Value then
+			startTeleportLoop()
+		else
+			stopTeleportLoop()
+		end
+	end
+})
 
 --Artifacts Teleport
+
+local Label = OtherTpTab:CreateLabel("Artifacts", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 -- Outside the button
 local artifactMemory = {}
@@ -758,91 +843,9 @@ Button3 = OtherTpTab:CreateButton({
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-local PlanetTpTab = Window:CreateTab("Earth Teleport And Other", 4483362458)
+local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 
-local Label = PlanetTpTab:CreateLabel("Earth Teleport", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
---Earth Functions And Button Toggle
-
-local teleporting = false
-local teleportCoroutine
-
-local function startTeleportLoop()
-	if teleporting then return end
-	teleporting = true
-
-	teleportCoroutine = coroutine.create(function()
-		local Players = game:GetService("Players")
-		local player = Players.LocalPlayer
-		local character = player.Character or player.CharacterAdded:Wait()
-		local humanoid = character:WaitForChild("Humanoid")
-		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-		local targetPos = Vector3.new(-3300, 31, -1407)
-		local searchRadius = 20
-
-		local function findNearbySeat()
-			for _, part in pairs(workspace:GetDescendants()) do
-				if (part:IsA("Seat") or part:IsA("VehicleSeat")) and part:IsA("BasePart") then
-					if (part.Position - targetPos).Magnitude <= searchRadius then
-						return part
-					end
-				end
-			end
-			return nil
-		end
-
-		local targetSeat = findNearbySeat()
-
-		if not targetSeat then
-			warn("No seat found within 20 studs of target position!")
-			teleporting = false
-			-- Toggle OFF automatically
-			PlanetTpTab.Flags["Toggle1"] = false
-			return
-		end
-
-		print("Found seat:", targetSeat:GetFullName())
-
-		while teleporting do
-			if not humanoid.Sit then
-				-- Teleport player above seat until seated
-				humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
-			else
-				print("Player is seated! Auto turning off.")
-				teleporting = false
-				-- Toggle OFF automatically
-				PlanetTpTab.Flags["Toggle1"] = false
-				break
-			end
-			task.wait(0.3)
-		end
-
-		print("Teleport loop ended.")
-	end)
-
-	coroutine.resume(teleportCoroutine)
-end
-
-local function stopTeleportLoop()
-	if teleporting then
-		teleporting = false
-		print("Teleport loop stopped manually.")
-	end
-end
-
-local Toggle = PlanetTpTab:CreateToggle({
-	Name = "Earth Teleport",
-	CurrentValue = false,
-	Flag = "Toggle1",
-	Callback = function(Value)
-		if Value then
-			startTeleportLoop()
-		else
-			stopTeleportLoop()
-		end
-	end
-})
 
 local Label = PlanetTpTab:CreateLabel("Bring Ships", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 

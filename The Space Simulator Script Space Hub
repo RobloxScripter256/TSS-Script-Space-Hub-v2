@@ -737,9 +737,8 @@ Button2 = OtherTpTab:CreateButton({
 	end,
 })
 
-
-local isInsideSedna = false  -- Track toggle state
-local Button3  -- declare it first
+local isInsideSedna = false
+local Button3
 
 Button3 = OtherTpTab:CreateButton({
 	Name = "Teleport Inside Sedna Cave",
@@ -753,18 +752,17 @@ Button3 = OtherTpTab:CreateButton({
 		if not center or not center:IsA("BasePart") then return end
 
 		if not isInsideSedna then
-			-- Teleport under Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, -10, 0)
 			isInsideSedna = true
-			Button3:Set("Teleport Outside Sedna Cave")
+			Button3.ButtonText.Text = "Teleport Outside Sedna Cave"
 		else
-			-- Teleport above Center
 			hrp.CFrame = center.CFrame * CFrame.new(0, 35, 0)
 			isInsideSedna = false
-			Button3:Set("Teleport Inside Sedna Cave")
+			Button3.ButtonText.Text = "Teleport Inside Sedna Cave"
 		end
 	end,
 })
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image

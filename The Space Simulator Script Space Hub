@@ -157,7 +157,7 @@ local Label = ShipTab:CreateLabel("For Change Speed You Must Sitting In Ship", 4
 
 local Slider = ShipTab:CreateSlider({
 	Name = "Ship Speed",
-	Range = {0, 150},
+	Range = {0, 100},
 	Increment = 1,
 	Suffix = "Max Speed",
 	CurrentValue = 0,
@@ -181,7 +181,7 @@ local Slider = ShipTab:CreateSlider({
 
 local Slider = ShipTab:CreateSlider({
 	Name = "Ship Deceleration",
-	Range = {0, 150},
+	Range = {0, 100},
 	Increment = 1,
 	Suffix = "Max Deceleration",
 	CurrentValue = 0,
@@ -194,7 +194,7 @@ local Slider = ShipTab:CreateSlider({
 
 local Slider = ShipTab:CreateSlider({
 	Name = "Ship Agility",
-	Range = {0, 150},
+	Range = {0, 100},
 	Increment = 1,
 	Suffix = "Max Agility",
 	CurrentValue = 0,
@@ -847,6 +847,42 @@ local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 
 local Label = PlanetTpTab:CreateLabel("Bring Ships", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
+local Button = PlanetTpTab:CreateButton({
+	Name = "Bring Orbiter",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		-- Step 1: Initial teleport
+		hrp.CFrame = CFrame.new(-3095, 15, -1371)
+
+		-- Step 2: Delay and fire nearby prompts
+		task.delay(0.2, function()
+			for _, descendant in pairs(workspace:GetDescendants()) do
+				if descendant:IsA("ProximityPrompt") then
+					local distance = (descendant.Parent.Position - hrp.Position).Magnitude
+					if distance <= 20 then
+						pcall(function()
+							fireproximityprompt(descendant)
+						end)
+					end
+				end
+			end
+
+			-- Step 3: Another delay and teleport to one of three random positions
+			task.delay(0.2, function()
+				local positions = {
+					Vector3.new(-3085, 34, -1390),
+					Vector3.new(-3081, 34, -1371),
+					Vector3.new(-3081, 34, -1353),
+				}
+				local randomPos = positions[math.random(1, #positions)]
+				hrp.CFrame = CFrame.new(randomPos)
+			end)
+		end)
+	end,
+})
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------

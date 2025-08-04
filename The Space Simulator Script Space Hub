@@ -188,7 +188,7 @@ local Toggle = MSettingsTab:CreateToggle({
 })
 
 local Toggle = MSettingsTab:CreateToggle({
-	Name = "No Pickaxe Level Require",
+	Name = "No Pickaxe Level Require Client Side",
 	CurrentValue = false,
 	Flag = "Toggle2",
 	Callback = (function()
@@ -261,6 +261,117 @@ local Toggle = MSettingsTab:CreateToggle({
 			end
 		end
 	end)()
+})
+
+local teleporting = false
+local teleportCoroutine
+
+local function startTeleportLoop()
+	if teleporting then return end
+	teleporting = true
+
+	teleportCoroutine = coroutine.create(function()
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then
+			warn("Planets folder not found in Workspace.")
+			teleporting = false
+			return
+		end
+
+		-- Find closest planet with Center within 200 studs
+		local nearestPlanet, minDistance = nil, math.huge
+		for _, model in pairs(planetsFolder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("Center") then
+				local dist = (model.Center.Position - hrp.Position).Magnitude
+				if dist < minDistance and dist <= 200 then
+					nearestPlanet = model
+					minDistance = dist
+				end
+			end
+		end
+
+		if not nearestPlanet then
+			warn("No nearby planet found within 200 studs.")
+			teleporting = false
+			return
+		end
+
+		local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
+		if not mineralsFolder then
+			warn("No Minerals folder in:", nearestPlanet.Name)
+			teleporting = false
+			return
+		end
+
+		local parts = {}
+		for _, part in ipairs(mineralsFolder:GetDescendants()) do
+			if part:IsA("BasePart") then
+				table.insert(parts, part)
+			end
+		end
+
+		if #parts == 0 then
+			warn("No parts found inside Minerals folder.")
+			teleporting = false
+			return
+		end
+
+		local startCFrame = hrp.CFrame
+		local lastIndex = nil
+
+		while teleporting do
+			for i, part in ipairs(parts) do
+				if not teleporting then break end
+
+				-- Avoid teleporting to the same part twice in a row
+				if i == lastIndex then
+					i = (i % #parts) + 1  -- move to next index safely
+				end
+
+				lastIndex = i
+
+				-- Teleport player slowly (instant here, you can tween if you want smooth)
+				hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0) -- teleport a bit above the part
+
+				task.wait(1) -- wait 1 second before next teleport
+			end
+
+			if not teleporting then break end
+
+			-- After finishing all parts, teleport back to start slowly
+			hrp.CFrame = startCFrame + Vector3.new(0, 3, 0)
+			task.wait(1)
+		end
+
+		print("Teleport loop stopped.")
+	end)
+
+	coroutine.resume(teleportCoroutine)
+end
+
+local function stopTeleportLoop()
+	if teleporting then
+		teleporting = false
+		print("Teleport loop stopped manually.")
+	end
+end
+
+local Toggle3 = MSettingsTab:CreateToggle({
+	Name = "Teleport To Resources",
+	CurrentValue = false,
+	Flag = "Toggle3",
+	Callback = function(Value)
+		if Value then
+			startTeleportLoop()
+		else
+			stopTeleportLoop()
+		end
+	end
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------

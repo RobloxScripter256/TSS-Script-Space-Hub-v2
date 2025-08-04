@@ -766,6 +766,110 @@ Button3 = OtherTpTab:CreateButton({
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+local PlanetTpTab = Window:CreateTab("Planets Teleport", 4483362458)
+
+local Label = PlanetTpTab:CreateLabel("Beta Teleport Some Will Not Work", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+--Earth Functions And Button Toggle
+
+local teleporting = false
+local teleportCoroutine
+
+local function startTeleportLoop()
+	if teleporting then return end
+	teleporting = true
+
+	teleportCoroutine = coroutine.create(function()
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+		local skinPart = workspace:FindFirstChild("Planets") 
+			and workspace.Planets:FindFirstChild("Earth") 
+			and workspace.Planets.Earth:FindFirstChild("Skin")
+
+		if not skinPart then
+			warn("Skin part not found!")
+			teleporting = false
+			return
+		end
+
+		local function findNearbySeat()
+			local radius = 300
+			for _, part in pairs(workspace:GetDescendants()) do
+				if (part:IsA("Seat") or part:IsA("VehicleSeat")) and part:IsA("BasePart") then
+					if (part.Position - skinPart.Position).Magnitude <= radius then
+						return part
+					end
+				end
+			end
+			return nil
+		end
+
+		local targetSeat = findNearbySeat()
+
+		if not targetSeat then
+			warn("No seat found within 300 studs of Skin!")
+			teleporting = false
+			return
+		end
+
+		print("Found seat:", targetSeat:GetFullName())
+
+		-- First teleport player ONCE to seat position (above seat)
+		humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
+
+		-- Wait until player sits
+		print("Waiting for player to sit...")
+		repeat
+			task.wait(0.2)
+		until humanoid.Sit or not teleporting
+
+		if not teleporting then
+			print("Teleport stopped before sitting.")
+			return
+		end
+
+		print("Player sat down! Starting teleport loop.")
+
+		-- Now loop teleport while toggle is still ON
+		while teleporting do
+			if character and character.Parent then
+				humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
+			end
+			task.wait(0.5)
+		end
+
+		print("Teleport loop ended, player stays where they are.")
+	end)
+
+	coroutine.resume(teleportCoroutine)
+end
+
+local function stopTeleportLoop()
+	if teleporting then
+		teleporting = false
+		print("Teleport loop stopped manually.")
+	end
+end
+
+-- Your toggle callback example:
+local Toggle = PlanetTpTab:CreateToggle({
+	Name = "Earth Teleport",
+	CurrentValue = false,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		if Value then
+			startTeleportLoop()
+		else
+			stopTeleportLoop()
+		end
+	end
+})
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local TrollTab = Window:CreateTab("Troll", 4483362458) -- Title, Image
 

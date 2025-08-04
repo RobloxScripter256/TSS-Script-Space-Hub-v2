@@ -364,21 +364,13 @@ toggleButton = OtherTab:CreateButton({
 })
 
 local Button = OtherTab:CreateButton({
-	Name = "Clean Rocks (Dont Click If You Removed Asteroids)",
+	Name = "Clean Rocks Asteroids",
 	Callback = function()
 		local rocks = workspace:WaitForChild("Rocks")
 		for _, child in ipairs(rocks:GetChildren()) do
 			child:Destroy()
 		end
 	end,
-})
-
-local Button = OtherTab:CreateButton({
-	Name = "Remove Asteroids",
-	Callback = function()
-		local rocks = workspace:WaitForChild("Rocks")
-		rocks:Destroy()
-	end
 })
 
 local Button
@@ -766,9 +758,9 @@ Button3 = OtherTpTab:CreateButton({
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-local PlanetTpTab = Window:CreateTab("Planets Teleport", 4483362458)
+local PlanetTpTab = Window:CreateTab("Earth Teleport And Other", 4483362458)
 
-local Label = PlanetTpTab:CreateLabel("Beta Teleport Some Will Not Work", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+local Label = PlanetTpTab:CreateLabel("Earth Teleport", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 --Earth Functions And Button Toggle
 
@@ -786,21 +778,13 @@ local function startTeleportLoop()
 		local humanoid = character:WaitForChild("Humanoid")
 		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-		local skinPart = workspace:FindFirstChild("Planets") 
-			and workspace.Planets:FindFirstChild("Earth") 
-			and workspace.Planets.Earth:FindFirstChild("Skin")
-
-		if not skinPart then
-			warn("Skin part not found!")
-			teleporting = false
-			return
-		end
+		local targetPos = Vector3.new(-3300, 31, -1407)
+		local searchRadius = 20
 
 		local function findNearbySeat()
-			local radius = 300
 			for _, part in pairs(workspace:GetDescendants()) do
 				if (part:IsA("Seat") or part:IsA("VehicleSeat")) and part:IsA("BasePart") then
-					if (part.Position - skinPart.Position).Magnitude <= radius then
+					if (part.Position - targetPos).Magnitude <= searchRadius then
 						return part
 					end
 				end
@@ -811,8 +795,10 @@ local function startTeleportLoop()
 		local targetSeat = findNearbySeat()
 
 		if not targetSeat then
-			warn("No seat found within 300 studs of Skin!")
+			warn("No seat found within 20 studs of target position!")
 			teleporting = false
+			-- Toggle OFF automatically
+			PlanetTpTab.Flags["Toggle1"] = false
 			return
 		end
 
@@ -820,20 +806,19 @@ local function startTeleportLoop()
 
 		while teleporting do
 			if not humanoid.Sit then
-				-- If not sitting, teleport player ABOVE the seat to encourage sitting
+				-- Teleport player above seat until seated
 				humanoidRootPart.CFrame = targetSeat.CFrame + Vector3.new(0, 2, 0)
-				-- print("Player not sitting, teleporting to seat...")
 			else
-				-- Player is sitting! Teleport seat + player TO Skin repeatedly
-				local skinCFrame = skinPart.CFrame + Vector3.new(0, 20, 0)
-				targetSeat.CFrame = skinCFrame
-				humanoidRootPart.CFrame = skinCFrame + Vector3.new(0, 20, 0)
-				-- print("Player sitting, teleporting to Skin with seat...")
+				print("Player is seated! Auto turning off.")
+				teleporting = false
+				-- Toggle OFF automatically
+				PlanetTpTab.Flags["Toggle1"] = false
+				break
 			end
-			task.wait(0.5)
+			task.wait(0.3)
 		end
 
-		print("Teleport loop ended, player stays where they are.")
+		print("Teleport loop ended.")
 	end)
 
 	coroutine.resume(teleportCoroutine)
@@ -858,6 +843,8 @@ local Toggle = PlanetTpTab:CreateToggle({
 		end
 	end
 })
+
+local Label = PlanetTpTab:CreateLabel("Bring Ships", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

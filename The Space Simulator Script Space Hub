@@ -825,9 +825,9 @@ local function startTeleportLoop()
 				-- print("Player not sitting, teleporting to seat...")
 			else
 				-- Player is sitting! Teleport seat + player TO Skin repeatedly
-				local skinCFrame = skinPart.CFrame + Vector3.new(0, 3, 0)
+				local skinCFrame = skinPart.CFrame + Vector3.new(0, 20, 0)
 				targetSeat.CFrame = skinCFrame
-				humanoidRootPart.CFrame = skinCFrame + Vector3.new(0, 2, 0)
+				humanoidRootPart.CFrame = skinCFrame + Vector3.new(0, 20, 0)
 				-- print("Player sitting, teleporting to Skin with seat...")
 			end
 			task.wait(0.5)

@@ -50,7 +50,9 @@ local ShipTab = Window:CreateTab("Ship", 4483362458) -- Title, Image
 local MSettingsTab = Window:CreateTab("Mine Settings", 4483362458) -- Title, Image
 local PlayerTab = Window:CreateTab("LocalPlayer", 4483362458) -- Title, Image
 local ESPTab = Window:CreateTab("ESP", 4483362458) -- Title, Image
+local OtherTpTab = Window:CreateTab("Teleport", 4483362458) -- Title, Image
 local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
+local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 local OtherTab = Window:CreateTab("Other", 4483362458) -- Title, Image
 
 local RunService = game:GetService("RunService")
@@ -122,8 +124,10 @@ local Button = PlayerTab:CreateButton({
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Label = MSettingsTab:CreateLabel("Please ReToggle When You Leave Planet Or Died", 4483362458, Color3.fromRGB(255, 205, 220), false)
+
 local Toggle = MSettingsTab:CreateToggle({
-	Name = "1 Hit Mine",
+	Name = "1 Hit Mine Resources And Orbs",
 	CurrentValue = false,
 	Flag = "Toggle1",
 	Callback = function(Value)
@@ -266,7 +270,7 @@ local Toggle = MSettingsTab:CreateToggle({
 local teleporting = false
 local teleportCoroutine
 
-local function startTeleportLoop()
+local function AstartTeleportLoop()
 	if teleporting then return end
 	teleporting = true
 
@@ -354,7 +358,7 @@ local function startTeleportLoop()
 	coroutine.resume(teleportCoroutine)
 end
 
-local function stopTeleportLoop()
+local function AstopTeleportLoop()
 	if teleporting then
 		teleporting = false
 		print("Teleport loop stopped manually.")
@@ -362,14 +366,14 @@ local function stopTeleportLoop()
 end
 
 local Toggle3 = MSettingsTab:CreateToggle({
-	Name = "Teleport To Resources",
+	Name = "Teleport To Resources ( You Must Inside Planets )",
 	CurrentValue = false,
 	Flag = "Toggle3",
 	Callback = function(Value)
 		if Value then
-			startTeleportLoop()
+			AstartTeleportLoop()
 		else
-			stopTeleportLoop()
+			AstopTeleportLoop()
 		end
 	end
 })
@@ -891,7 +895,7 @@ local Toggle = ESPTab:CreateToggle({
 
 --Other Teleports
 
-local OtherTpTab = Window:CreateTab("Other Teleport", 4483362458) -- Title, Image
+
 
 
 local Label = OtherTpTab:CreateLabel("Earth Teleport ( Require Shuttle )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
@@ -1100,7 +1104,6 @@ Button3 = OtherTpTab:CreateButton({
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 
 local Label = PlanetTpTab:CreateLabel("Bring Ships ( You Must Own The Ship )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 

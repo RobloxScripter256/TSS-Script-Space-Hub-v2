@@ -47,6 +47,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local ShipTab = Window:CreateTab("Ship", 4483362458) -- Title, Image
+local MSettingsTab = Window:CreateTab("Mine Settings", 4483362458) -- Title, Image
 local PlayerTab = Window:CreateTab("LocalPlayer", 4483362458) -- Title, Image
 local ESPTab = Window:CreateTab("ESP", 4483362458) -- Title, Image
 local CSettingsTab = Window:CreateTab("Client Settings", 4483362458) -- Title, Image
@@ -118,6 +119,151 @@ local Button = PlayerTab:CreateButton({
 		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0-- The function that takes place when the button is pressed
 	end,
 })
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Toggle = MSettingsTab:CreateToggle({
+	Name = "1 Hit Mine",
+	CurrentValue = false,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		local allowedClasses = {
+			["BasePart"] = true,
+			["MeshPart"] = true,
+			["UnionOperation"] = true,
+			["Part"] = true,
+		}
+
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then
+			warn("Planets folder not found in Workspace.")
+			return
+		end
+
+		-- Find closest planet model
+		local nearestPlanet, minDistance = nil, math.huge
+		for _, model in pairs(planetsFolder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("Center") then
+				local dist = (model.Center.Position - hrp.Position).Magnitude
+				if dist < minDistance and dist <= 200 then
+					nearestPlanet = model
+					minDistance = dist
+				end
+			end
+		end
+
+		if not nearestPlanet then
+			warn("No nearby planet found within 200 studs.")
+			return
+		end
+
+		local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
+		if not mineralsFolder then
+			warn("No Minerals folder in:", nearestPlanet.Name)
+			return
+		end
+
+		for _, part in ipairs(mineralsFolder:GetDescendants()) do
+			if allowedClasses[part.ClassName] and part:GetAttribute("hitpoints") ~= nil then
+				local dist = (part.Position - hrp.Position).Magnitude
+				if dist <= 200 then
+					if Value then
+						-- Toggle ON: Set hitpoints to 1
+						if part:GetAttribute("hitpoints") ~= 1 then
+							part:SetAttribute("hitpoints", 1)
+						end
+					else
+						-- Toggle OFF: Reset hitpoints to 100
+						part:SetAttribute("hitpoints", 100)
+					end
+				end
+			end
+		end
+	end,
+})
+
+local Toggle = MSettingsTab:CreateToggle({
+	Name = "No Pickaxe Level Require",
+	CurrentValue = false,
+	Flag = "Toggle2",
+	Callback = (function()
+		local modifiedParts = {}  -- Store original minPickaxeLevel values
+
+		return function(Value)
+			local Players = game:GetService("Players")
+			local player = Players.LocalPlayer
+			local character = player.Character or player.CharacterAdded:Wait()
+			local hrp = character:WaitForChild("HumanoidRootPart")
+
+			local allowedClasses = {
+				["BasePart"] = true,
+				["MeshPart"] = true,
+				["UnionOperation"] = true,
+				["Part"] = true,
+			}
+
+			local planetsFolder = workspace:FindFirstChild("Planets")
+			if not planetsFolder then
+				warn("Planets folder not found in Workspace.")
+				return
+			end
+
+			-- Find closest planet within 200 studs
+			local nearestPlanet, minDistance = nil, math.huge
+			for _, model in pairs(planetsFolder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("Center") then
+					local dist = (model.Center.Position - hrp.Position).Magnitude
+					if dist < minDistance and dist <= 200 then
+						nearestPlanet = model
+						minDistance = dist
+					end
+				end
+			end
+
+			if not nearestPlanet then
+				warn("No nearby planet found within 200 studs.")
+				return
+			end
+
+			local mineralsFolder = nearestPlanet:FindFirstChild("Minerals")
+			if not mineralsFolder then
+				warn("No Minerals folder in:", nearestPlanet.Name)
+				return
+			end
+
+			if Value then
+				-- Toggle ON: Set minPickaxeLevel to 1
+				for _, part in ipairs(mineralsFolder:GetDescendants()) do
+					if allowedClasses[part.ClassName] then
+						local level = part:GetAttribute("minPickaxeLevel")
+						if level ~= nil and level ~= 1 then
+							local dist = (part.Position - hrp.Position).Magnitude
+							if dist <= 200 then
+								modifiedParts[part] = level
+								part:SetAttribute("minPickaxeLevel", 1)
+							end
+						end
+					end
+				end
+			else
+				-- Toggle OFF: Restore all previously modified parts
+				for part, originalLevel in pairs(modifiedParts) do
+					if part and part:IsDescendantOf(game) then
+						part:SetAttribute("minPickaxeLevel", originalLevel)
+					end
+				end
+				table.clear(modifiedParts)
+			end
+		end
+	end)()
+})
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Button = PlayerTab:CreateButton({
 	Name = "Rejoin",
@@ -845,7 +991,7 @@ Button3 = OtherTpTab:CreateButton({
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 local PlanetTpTab = Window:CreateTab("Bring Ships", 4483362458)
 
-local Label = PlanetTpTab:CreateLabel("Bring Ships", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+local Label = PlanetTpTab:CreateLabel("Bring Ships ( You Must Own The Ship )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 local Button = PlanetTpTab:CreateButton({
 	Name = "Bring Orbiter",

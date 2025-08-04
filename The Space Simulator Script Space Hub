@@ -152,7 +152,7 @@ local Toggle = MSettingsTab:CreateToggle({
 		-- Find closest planet model
 		local nearestPlanet, minDistance = nil, math.huge
 		for _, model in pairs(planetsFolder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("Center") then
+			if model:IsA("Model") and model:FindFirstChild("Skin") then
 				local dist = (model.Center.Position - hrp.Position).Magnitude
 				if dist < minDistance and dist <= 200 then
 					nearestPlanet = model
@@ -388,14 +388,14 @@ local function startEquipLoop()
 		local backpack = player:WaitForChild("Backpack")
 
 		while teleporting do
-			local tools = {}
+			local pickaxes = {}
 			for _, item in ipairs(backpack:GetChildren()) do
-				if item:IsA("Tool") then
-					table.insert(tools, item)
+				if item:IsA("Tool") and item:GetAttribute("pickaxe") == true then
+					table.insert(pickaxes, item)
 				end
 			end
 
-			local toolToEquip = tools[2]
+			local toolToEquip = pickaxes[2]
 			if toolToEquip then
 				toolToEquip.Parent = player.Character
 			end
@@ -936,6 +936,68 @@ local Toggle = ESPTab:CreateToggle({
 						label.Parent = billboard
 
 						table.insert(espTags, billboard)
+					end
+				end
+			end
+		end
+	end,
+})
+
+local Toggle = ESPTab:CreateToggle({
+	Name = "Crate ESP (Centaurs)",
+	CurrentValue = false,
+	Flag = "Toggle2",
+	Callback = function(Value)
+		local espName = "CrateESP"
+
+		-- Cleanup function
+		local function removeAllESP()
+			for _, centaur in ipairs(workspace:FindFirstChild("Centaurs"):GetDescendants()) do
+				if centaur:IsA("BasePart") then
+					local existingESP = centaur:FindFirstChild(espName)
+					if existingESP then
+						existingESP:Destroy()
+					end
+				end
+			end
+		end
+
+		if not Value then
+			removeAllESP()
+			return
+		end
+
+		local centaurs = workspace:FindFirstChild("Centaurs")
+		if not centaurs then return end
+
+		for _, centaurModel in ipairs(centaurs:GetChildren()) do
+			local minerals = centaurModel:FindFirstChild("Minerals")
+			if minerals then
+				for _, part in ipairs(minerals:GetDescendants()) do
+					if (part:IsA("BasePart") or part:IsA("MeshPart")) and part:GetAttribute("crate") == true then
+						local hp = part:GetAttribute("hippoints")
+						if typeof(hp) == "number" and hp > 0 then
+							-- Add BillboardGui
+							local billboard = Instance.new("BillboardGui")
+							billboard.Name = espName
+							billboard.Size = UDim2.new(0, 100, 0, 30)
+							billboard.StudsOffset = Vector3.new(0, 2, 0)
+							billboard.AlwaysOnTop = true
+							billboard.Adornee = part
+							billboard.Parent = part
+
+							local label = Instance.new("TextLabel")
+							label.AnchorPoint = Vector2.new(0.5, 0.5)
+							label.Position = UDim2.new(0.5, 0, 0.5, 0)
+							label.Size = UDim2.new(1, 0, 1, 0)
+							label.BackgroundTransparency = 1
+							label.Text = part.Name
+							label.TextColor3 = Color3.new(0, 1, 0)
+							label.TextStrokeTransparency = 0.5
+							label.TextScaled = true
+							label.Font = Enum.Font.SourceSansBold
+							label.Parent = billboard
+						end
 					end
 				end
 			end

@@ -152,14 +152,27 @@ local Toggle = MSettingsTab:CreateToggle({
 		-- Find closest planet model
 		local nearestPlanet, minDistance = nil, math.huge
 		for _, model in pairs(planetsFolder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("Center") then
-				local dist = (model.Center.Position - hrp.Position).Magnitude
-				if dist < minDistance and dist <= 200 then
-					nearestPlanet = model
-					minDistance = dist
+			if model:IsA("Model") then
+				local referencePart = nil
+				if model:FindFirstChild("Center") then
+					referencePart = model.Center
+				elseif model.Name == "Sun" then
+					local core = model:FindFirstChildWhichIsA("MeshPart")
+					if core and core.Name == "Core" then
+						referencePart = core
+					end
+				end
+
+				if referencePart then
+					local dist = (referencePart.Position - hrp.Position).Magnitude
+					if dist < minDistance and dist <= 200 then
+						nearestPlanet = model
+						minDistance = dist
+					end
 				end
 			end
 		end
+
 
 		if not nearestPlanet then
 			warn("No nearby planet found within 200 studs.")
@@ -220,11 +233,23 @@ local Toggle = MSettingsTab:CreateToggle({
 			-- Find closest planet within 200 studs
 			local nearestPlanet, minDistance = nil, math.huge
 			for _, model in pairs(planetsFolder:GetChildren()) do
-				if model:IsA("Model") and model:FindFirstChild("Center") then
-					local dist = (model.Center.Position - hrp.Position).Magnitude
-					if dist < minDistance and dist <= 200 then
-						nearestPlanet = model
-						minDistance = dist
+				if model:IsA("Model") then
+					local referencePart = nil
+					if model:FindFirstChild("Center") then
+						referencePart = model.Center
+					elseif model.Name == "Sun" then
+						local core = model:FindFirstChildWhichIsA("MeshPart")
+						if core and core.Name == "Core" then
+							referencePart = core
+						end
+					end
+
+					if referencePart then
+						local dist = (referencePart.Position - hrp.Position).Magnitude
+						if dist < minDistance and dist <= 200 then
+							nearestPlanet = model
+							minDistance = dist
+						end
 					end
 				end
 			end
@@ -288,14 +313,26 @@ local function AstartTeleportLoop()
 			return
 		end
 
-		-- Find closest planet with Center within 200 studs
+		-- Find closest planet within 200 studs
 		local nearestPlanet, minDistance = nil, math.huge
 		for _, model in pairs(planetsFolder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("Center") then
-				local dist = (model.Center.Position - hrp.Position).Magnitude
-				if dist < minDistance and dist <= 200 then
-					nearestPlanet = model
-					minDistance = dist
+			if model:IsA("Model") then
+				local referencePart = nil
+				if model:FindFirstChild("Center") then
+					referencePart = model.Center
+				elseif model.Name == "Sun" then
+					local core = model:FindFirstChildWhichIsA("MeshPart")
+					if core and core.Name == "Core" then
+						referencePart = core
+					end
+				end
+
+				if referencePart then
+					local dist = (referencePart.Position - hrp.Position).Magnitude
+					if dist < minDistance and dist <= 200 then
+						nearestPlanet = model
+						minDistance = dist
+					end
 				end
 			end
 		end

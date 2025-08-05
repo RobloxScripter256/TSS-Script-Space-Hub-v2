@@ -1060,7 +1060,6 @@ local Toggle3 = ESPTab:CreateToggle({
 		if not planetsFolder then return end
 
 		if Value then
-			-- Toggle ON
 			toggleConnection = RunService.Heartbeat:Connect(function()
 				for _, planetModel in pairs(planetsFolder:GetChildren()) do
 					if planetModel:IsA("Model") then
@@ -1071,51 +1070,57 @@ local Toggle3 = ESPTab:CreateToggle({
 							local orbPart = minerals:FindFirstChild(orbName)
 
 							if orbPart and orbPart:IsA("BasePart") then
-								-- BillboardGui
-								if not orbPart:FindFirstChild("OrbBillboard") then
-									local bb = Instance.new("BillboardGui")
-									bb.Name = "OrbBillboard"
-									bb.Size = UDim2.new(0, 100, 0, 30)
-									bb.StudsOffset = Vector3.new(0, 3, 0)
-									bb.Adornee = orbPart
-									bb.AlwaysOnTop = true
-									bb.Parent = orbPart
+								local hitpoints = orbPart:GetAttribute("hitpoints")
+								if typeof(hitpoints) == "number" and hitpoints > 0 then
+									-- Billboard
+									if not orbPart:FindFirstChild("OrbBillboard") then
+										local bb = Instance.new("BillboardGui")
+										bb.Name = "OrbBillboard"
+										bb.Size = UDim2.new(0, 100, 0, 30)
+										bb.StudsOffset = Vector3.new(0, 3, 0)
+										bb.Adornee = orbPart
+										bb.AlwaysOnTop = true
+										bb.Parent = orbPart
 
-									local label = Instance.new("TextLabel")
-									label.Size = UDim2.new(1, 0, 1, 0)
-									label.BackgroundTransparency = 1
-									label.TextColor3 = Color3.fromRGB(0, 170, 255)
-									label.TextStrokeTransparency = 0.5
-									label.TextScaled = true
-									label.Font = Enum.Font.SourceSansBold
-									label.Text = planetName .. " Orb"
-									label.Parent = bb
-								end
+										local label = Instance.new("TextLabel")
+										label.Size = UDim2.new(1, 0, 1, 0)
+										label.BackgroundTransparency = 1
+										label.TextColor3 = Color3.fromRGB(0, 170, 255)
+										label.TextStrokeTransparency = 0.5
+										label.TextScaled = true
+										label.Font = Enum.Font.SourceSansBold
+										label.Text = planetName .. " Orb"
+										label.Parent = bb
+									end
 
-								-- Beam
-								if not orbPart:FindFirstChild("OrbAttachment") then
-									local orbAttachment = Instance.new("Attachment")
-									orbAttachment.Name = "OrbAttachment"
-									orbAttachment.Parent = orbPart
-								end
+									-- Beam
+									if not orbPart:FindFirstChild("OrbAttachment") then
+										local orbAttachment = Instance.new("Attachment", orbPart)
+										orbAttachment.Name = "OrbAttachment"
 
-								if not hrp:FindFirstChild("PlayerAttachment") then
-									local hrpAttachment = Instance.new("Attachment")
-									hrpAttachment.Name = "PlayerAttachment"
-									hrpAttachment.Parent = hrp
-								end
+										local playerAttachment = hrp:FindFirstChild("OrbESP_Attachment") or Instance.new("Attachment", hrp)
+										playerAttachment.Name = "OrbESP_Attachment"
 
-								if not orbPart:FindFirstChild("OrbBeam") then
-									local beam = Instance.new("Beam")
-									beam.Name = "OrbBeam"
-									beam.Attachment0 = orbPart:FindFirstChild("OrbAttachment")
-									beam.Attachment1 = hrp:FindFirstChild("PlayerAttachment")
-									beam.Width0 = 0.1
-									beam.Width1 = 0.1
-									beam.FaceCamera = true
-									beam.Color = ColorSequence.new(Color3.fromRGB(0, 170, 255))
-									beam.LightEmission = 1
-									beam.Parent = orbPart
+										local beam = Instance.new("Beam")
+										beam.Name = "OrbESPBeam"
+										beam.Attachment0 = orbAttachment
+										beam.Attachment1 = playerAttachment
+										beam.Color = ColorSequence.new(Color3.fromRGB(0, 170, 255))
+										beam.Width0 = 0.2
+										beam.Width1 = 0.2
+										beam.FaceCamera = true
+										beam.Parent = orbPart
+									end
+								else
+									-- Clean up if hitpoints is 0 or missing
+									local bb = orbPart:FindFirstChild("OrbBillboard")
+									if bb then bb:Destroy() end
+
+									local beam = orbPart:FindFirstChild("OrbESPBeam")
+									if beam then beam:Destroy() end
+
+									local att = orbPart:FindFirstChild("OrbAttachment")
+									if att then att:Destroy() end
 								end
 							end
 						end
@@ -1123,7 +1128,7 @@ local Toggle3 = ESPTab:CreateToggle({
 				end
 			end)
 		else
-			-- Toggle OFF
+			-- Toggle OFF: Disconnect and remove all billboards/beams
 			if toggleConnection then
 				toggleConnection:Disconnect()
 				toggleConnection = nil
@@ -1140,18 +1145,18 @@ local Toggle3 = ESPTab:CreateToggle({
 							local bb = orbPart:FindFirstChild("OrbBillboard")
 							if bb then bb:Destroy() end
 
-							local beam = orbPart:FindFirstChild("OrbBeam")
+							local beam = orbPart:FindFirstChild("OrbESPBeam")
 							if beam then beam:Destroy() end
 
-							local orbAttach = orbPart:FindFirstChild("OrbAttachment")
-							if orbAttach then orbAttach:Destroy() end
+							local att = orbPart:FindFirstChild("OrbAttachment")
+							if att then att:Destroy() end
 						end
 					end
 				end
 			end
 
-			local hrpAttachment = hrp:FindFirstChild("PlayerAttachment")
-			if hrpAttachment then hrpAttachment:Destroy() end
+			local playerAtt = hrp:FindFirstChild("OrbESP_Attachment")
+			if playerAtt then playerAtt:Destroy() end
 		end
 	end,
 })

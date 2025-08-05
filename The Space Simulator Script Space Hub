@@ -1128,6 +1128,8 @@ local Toggle3 = ESPTab:CreateToggle({
 
 local toggleConnection4
 
+local toggleConnection4
+
 local Toggle4 = ESPTab:CreateToggle({
 	Name = "Metallic Hydrogen ESP",
 	CurrentValue = false,
@@ -1150,7 +1152,14 @@ local Toggle4 = ESPTab:CreateToggle({
 
 							if mhPart and mhPart:IsA("MeshPart") then
 								local hitpoints = mhPart:GetAttribute("hitpoints")
-								if typeof(hitpoints) == "number" and hitpoints > 0 then
+
+								if typeof(hitpoints) == "number" then
+									if hitpoints ~= 1 then
+										mhPart:SetAttribute("hitpoints", 1)
+									end
+								end
+
+								if hitpoints and hitpoints > 0 then
 									if not mhPart:FindFirstChild("MHEsp") then
 										local bb = Instance.new("BillboardGui")
 										bb.Name = "MHEsp"
@@ -1169,11 +1178,6 @@ local Toggle4 = ESPTab:CreateToggle({
 										label.Font = Enum.Font.SourceSansBold
 										label.Text = planetName .. " Metallic Hydrogen 💎"
 										label.Parent = bb
-									end
-								else
-									local existing = mhPart:FindFirstChild("MHEsp")
-									if existing then
-										existing:Destroy()
 									end
 								end
 							end
@@ -1200,6 +1204,52 @@ local Toggle4 = ESPTab:CreateToggle({
 						end
 					end
 				end
+			end
+		end
+	end
+})
+
+local toggleConnection5
+
+local Toggle5 = ESPTab:CreateToggle({
+	Name = "Teleport Hydrogen Near",
+	CurrentValue = false,
+	Flag = "Toggle5",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+		local humanoid = character:WaitForChild("Humanoid")
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then return end
+
+		if Value then
+			toggleConnection5 = RunService.Heartbeat:Connect(function()
+				if humanoid.Sit then return end
+
+				for _, planetModel in pairs(planetsFolder:GetChildren()) do
+					if planetModel:IsA("Model") then
+						local minerals = planetModel:FindFirstChild("Minerals")
+						if minerals then
+							local hydrogen = minerals:FindFirstChild("Metallic Hydrogen")
+
+							if hydrogen and hydrogen:IsA("MeshPart") then
+								local hitpoints = hydrogen:GetAttribute("hitpoints")
+								if typeof(hitpoints) == "number" and hitpoints > 0 then
+									local distance = (hydrogen.Position - hrp.Position).Magnitude
+									if distance <= 100 then
+										hydrogen.CFrame = CFrame.new(hrp.Position + Vector3.new(0, 0, 0))
+									end
+								end
+							end
+						end
+					end
+				end
+			end)
+		else
+			if toggleConnection5 then
+				toggleConnection5:Disconnect()
+				toggleConnection5 = nil
 			end
 		end
 	end

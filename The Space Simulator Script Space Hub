@@ -11,8 +11,8 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
 	Name = "The Space Simulator - Space Hub 🪐",
-	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-	LoadingTitle = "Space Hub v0.3",
+	Icon = 17104625041, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = "Space Hub v0.4",
 	LoadingSubtitle = "by Dev_Smiley",
 	ShowText = "Space Hub 🪐", -- for mobile users to unhide rayfield, change if you'd like
 	Theme = "Bloom", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -734,6 +734,8 @@ Button = OtherTab:CreateButton({
 
 --ESP Functions
 
+local Label = ESPTab:CreateLabel("Please Turn Off And On Back If They Are Not Updating", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
 --Alien Ship ESP Functions
 
 local espAOn = false
@@ -1169,11 +1171,11 @@ local Toggle4 = ESPTab:CreateToggle({
 										local label = Instance.new("TextLabel")
 										label.Size = UDim2.new(1, 0, 1, 0)
 										label.BackgroundTransparency = 1
-										label.TextColor3 = Color3.fromRGB(255, 0, 255)
+										label.TextColor3 = Color3.fromRGB(255, 170, 127)
 										label.TextStrokeTransparency = 0.5
 										label.TextScaled = true
 										label.Font = Enum.Font.SourceSansBold
-										label.Text = planetName .. " Metallic Hydrogen 💎"
+										label.Text = planetName .. " Metallic Hydrogen"
 										label.Parent = bb
 									end
 								end
@@ -1252,6 +1254,46 @@ local Toggle5 = ESPTab:CreateToggle({
 		end
 	end
 })
+
+local Label = ESPTab:CreateLabel("Sun Orb Settings (This Is Added For Test)", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+local toggleConnection6
+
+local Toggle6 = ESPTab:CreateToggle({
+	Name = "1 Hit Sun Orb",
+	CurrentValue = false,
+	Flag = "Toggle6",
+	Callback = function(Value)
+		local sunOrbPath = workspace:FindFirstChild("Planets")
+		if not sunOrbPath then return end
+
+		sunOrbPath = sunOrbPath:FindFirstChild("Sun")
+		if not sunOrbPath then return end
+
+		local mineralsFolder = sunOrbPath:FindFirstChild("Minerals")
+		if not mineralsFolder then return end
+
+		if Value then
+			toggleConnection6 = RunService.Heartbeat:Connect(function()
+				local sunOrb = mineralsFolder:FindFirstChild("Sun Orb")
+				if sunOrb and sunOrb:IsA("BasePart") then
+					local hitpoints = sunOrb:GetAttribute("hitpoints")
+
+					if typeof(hitpoints) == "number" and hitpoints ~= 0 and hitpoints ~= 1 then
+						sunOrb:SetAttribute("hitpoints", 1)
+					end
+				end
+			end)
+		else
+			if toggleConnection6 then
+				toggleConnection6:Disconnect()
+				toggleConnection6 = nil
+			end
+		end
+	end
+})
+
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -1049,7 +1049,7 @@ local Toggle = ESPTab:CreateToggle({
 local toggleConnection
 
 local Toggle3 = ESPTab:CreateToggle({
-	Name = "Orb ESP",
+	Name = "Orbs ESP",
 	CurrentValue = false,
 	Flag = "Toggle3",
 	Callback = function(Value)
@@ -1089,7 +1089,7 @@ local Toggle3 = ESPTab:CreateToggle({
 										label.TextStrokeTransparency = 0.5
 										label.TextScaled = true
 										label.Font = Enum.Font.SourceSansBold
-										label.Text = planetName .. " Orb 🔮"
+										label.Text = planetName .. " Orb 📌"
 										label.Parent = bb
 									end
 								else

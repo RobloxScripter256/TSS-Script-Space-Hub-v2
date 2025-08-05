@@ -1296,7 +1296,7 @@ local Toggle6 = ESPTab:CreateToggle({
 local toggleConnection7
 
 local Toggle7 = ESPTab:CreateToggle({
-	Name = "Bring Sun Flares",
+	Name = "Bring 1 Random Sun Flare In Front",
 	CurrentValue = false,
 	Flag = "Toggle7",
 	Callback = function(Value)
@@ -1318,12 +1318,20 @@ local Toggle7 = ESPTab:CreateToggle({
 
 		if Value then
 			toggleConnection7 = RunService.Heartbeat:Connect(function()
-				for _, flare in pairs(flaresFolder:GetDescendants()) do
-					if flare:IsA("MeshPart") then
-						local distance = (flare.Position - hrp.Position).Magnitude
-						if distance > 5 then
-							local forward = hrp.CFrame.LookVector * 100
-							flare.CFrame = CFrame.new(hrp.Position + forward)
+				local meshParts = {}
+
+				for _, obj in pairs(flaresFolder:GetDescendants()) do
+					if obj:IsA("MeshPart") then
+						table.insert(meshParts, obj)
+					end
+				end
+
+				if #meshParts > 0 then
+					local chosen = meshParts[math.random(1, #meshParts)]
+					if chosen and chosen:IsDescendantOf(workspace) then
+						local targetPos = hrp.Position + hrp.CFrame.LookVector * 100
+						if (chosen.Position - targetPos).Magnitude > 5 then
+							chosen.CFrame = CFrame.new(targetPos)
 						end
 					end
 				end

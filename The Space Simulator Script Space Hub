@@ -1046,6 +1046,66 @@ local Toggle = ESPTab:CreateToggle({
 	end,
 })
 
+local Toggle3 = MSettingsTab:CreateToggle({
+	Name = "Orb ESP",
+	CurrentValue = false,
+	Flag = "Toggle3",
+	Callback = function(Value)
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then return end
+
+		for _, planetModel in pairs(planetsFolder:GetChildren()) do
+			if planetModel:IsA("Model") then
+				local planetName = planetModel.Name
+				local minerals = planetModel:FindFirstChild("Minerals")
+				if minerals then
+					local orbModelName = planetName .. " Orb"
+					local orbModel = minerals:FindFirstChild(orbModelName)
+					if orbModel and orbModel:IsA("Model") then
+						-- Find a primary part or any part to attach the Billboard to
+						local attachPart = orbModel.PrimaryPart or orbModel:FindFirstChildWhichIsA("BasePart")
+						if attachPart then
+							-- Toggle ON: Add Billboard
+							if Value then
+								if not attachPart:FindFirstChild("OrbBillboard") then
+									local bb = Instance.new("BillboardGui")
+									bb.Name = "OrbBillboard"
+									bb.Size = UDim2.new(0, 150, 0, 50)
+									bb.StudsOffset = Vector3.new(0, 3, 0)
+									bb.Adornee = attachPart
+									bb.AlwaysOnTop = true
+									bb.Parent = attachPart
+
+									local label = Instance.new("TextLabel")
+									label.Size = UDim2.new(1, 0, 1, 0)
+									label.BackgroundTransparency = 1
+									label.TextColor3 = Color3.fromRGB(0, 170, 255)
+									label.TextStrokeTransparency = 0.5
+									label.TextScaled = true
+									label.Font = Enum.Font.SourceSansBold
+									label.Text = planetName .. " Orb"
+									label.Parent = bb
+								end
+							else
+								-- Toggle OFF: Destroy Billboard if exists
+								local bb = attachPart:FindFirstChild("OrbBillboard")
+								if bb then
+									bb:Destroy()
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end,
+})
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --Other Teleports

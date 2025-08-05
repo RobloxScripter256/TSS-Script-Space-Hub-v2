@@ -1089,7 +1089,7 @@ local Toggle3 = ESPTab:CreateToggle({
 										label.TextStrokeTransparency = 0.5
 										label.TextScaled = true
 										label.Font = Enum.Font.SourceSansBold
-										label.Text = planetName .. " Orb 📌"
+										label.Text = planetName .. " Orb 🎯"
 										label.Parent = bb
 									end
 								else
@@ -1124,6 +1124,85 @@ local Toggle3 = ESPTab:CreateToggle({
 			end
 		end
 	end,
+})
+
+local toggleConnection4
+
+local Toggle4 = ESPTab:CreateToggle({
+	Name = "Metallic Hydrogen ESP",
+	CurrentValue = false,
+	Flag = "Toggle4",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then return end
+
+		if Value then
+			toggleConnection4 = RunService.Heartbeat:Connect(function()
+				for _, planetModel in pairs(planetsFolder:GetChildren()) do
+					if planetModel:IsA("Model") then
+						local planetName = planetModel.Name
+						local minerals = planetModel:FindFirstChild("Minerals")
+						if minerals then
+							local mhPart = minerals:FindFirstChild("Metallic Hydrogen")
+
+							if mhPart and mhPart:IsA("MeshPart") then
+								local hitpoints = mhPart:GetAttribute("hitpoints")
+								if typeof(hitpoints) == "number" and hitpoints > 0 then
+									if not mhPart:FindFirstChild("MHEsp") then
+										local bb = Instance.new("BillboardGui")
+										bb.Name = "MHEsp"
+										bb.Size = UDim2.new(0, 80, 0, 20)
+										bb.StudsOffset = Vector3.new(0, 3, 0)
+										bb.Adornee = mhPart
+										bb.AlwaysOnTop = true
+										bb.Parent = mhPart
+
+										local label = Instance.new("TextLabel")
+										label.Size = UDim2.new(1, 0, 1, 0)
+										label.BackgroundTransparency = 1
+										label.TextColor3 = Color3.fromRGB(255, 0, 255)
+										label.TextStrokeTransparency = 0.5
+										label.TextScaled = true
+										label.Font = Enum.Font.SourceSansBold
+										label.Text = planetName .. " Metallic Hydrogen 💎"
+										label.Parent = bb
+									end
+								else
+									local existing = mhPart:FindFirstChild("MHEsp")
+									if existing then
+										existing:Destroy()
+									end
+								end
+							end
+						end
+					end
+				end
+			end)
+		else
+			if toggleConnection4 then
+				toggleConnection4:Disconnect()
+				toggleConnection4 = nil
+			end
+
+			for _, planetModel in pairs(planetsFolder:GetChildren()) do
+				if planetModel:IsA("Model") then
+					local minerals = planetModel:FindFirstChild("Minerals")
+					if minerals then
+						local mhPart = minerals:FindFirstChild("Metallic Hydrogen")
+						if mhPart and mhPart:IsA("MeshPart") then
+							local existing = mhPart:FindFirstChild("MHEsp")
+							if existing then
+								existing:Destroy()
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 })
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------

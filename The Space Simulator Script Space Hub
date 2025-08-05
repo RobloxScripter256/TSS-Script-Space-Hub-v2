@@ -1234,7 +1234,7 @@ local Toggle5 = ESPTab:CreateToggle({
 								local hitpoints = hydrogen:GetAttribute("hitpoints")
 								if typeof(hitpoints) == "number" and hitpoints > 0 then
 									local distance = (hydrogen.Position - hrp.Position).Magnitude
-									if distance <= 100 then
+									if distance <= 150 then
 										hrp.CFrame = CFrame.new(hydrogen.Position + Vector3.new(0, 0, 0))
 										break -- optional: teleport to first one only
 									end

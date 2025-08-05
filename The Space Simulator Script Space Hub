@@ -1293,7 +1293,49 @@ local Toggle6 = ESPTab:CreateToggle({
 	end
 })
 
+local toggleConnection7
 
+local Toggle7 = ESPTab:CreateToggle({
+	Name = "Bring Sun Flares",
+	CurrentValue = false,
+	Flag = "Toggle7",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then return end
+
+		local sun = planetsFolder:FindFirstChild("Sun")
+		if not sun then return end
+
+		local area = sun:FindFirstChild("Area")
+		if not area then return end
+
+		local flaresFolder = area:FindFirstChild("Flares")
+		if not flaresFolder then return end
+
+		if Value then
+			toggleConnection7 = RunService.Heartbeat:Connect(function()
+				for _, flare in pairs(flaresFolder:GetDescendants()) do
+					if flare:IsA("MeshPart") then
+						local distance = (flare.Position - hrp.Position).Magnitude
+						if distance > 5 then
+							local forward = hrp.CFrame.LookVector * 100
+							flare.CFrame = CFrame.new(hrp.Position + forward)
+						end
+					end
+				end
+			end)
+		else
+			if toggleConnection7 then
+				toggleConnection7:Disconnect()
+				toggleConnection7 = nil
+			end
+		end
+	end
+})
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

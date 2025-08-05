@@ -747,7 +747,7 @@ local function addABillboard()
 	local abillboard = Instance.new("BillboardGui")
 	abillboard.Name = billboardName
 	abillboard.Adornee = alienShip
-	abillboard.Size = UDim2.new(0, 100, 0, 25)
+	abillboard.Size = UDim2.new(0, 80, 0, 20)
 	abillboard.StudsOffset = Vector3.new(0, 2, 0)
 	abillboard.AlwaysOnTop = true
 	abillboard.Parent = alienShip
@@ -794,7 +794,7 @@ local function addBillboards()
 				local billboard = Instance.new("BillboardGui")
 				billboard.Name = billboardName
 				billboard.Adornee = primaryPart
-				billboard.Size = UDim2.new(0, 100, 0, 25)
+				billboard.Size = UDim2.new(0, 80, 0, 20)
 				billboard.StudsOffset = Vector3.new(0, 3, 0)
 				billboard.AlwaysOnTop = true
 				billboard.Parent = model
@@ -842,7 +842,7 @@ local function addBillboard()
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = billboardName
 	billboard.Adornee = goldenRecord
-	billboard.Size = UDim2.new(0, 100, 0, 25)
+	billboard.Size = UDim2.new(0, 80, 0, 20)
 	billboard.StudsOffset = Vector3.new(0, 2, 0)
 	billboard.AlwaysOnTop = true
 	billboard.Parent = goldenRecord
@@ -948,7 +948,7 @@ local Toggle = ESPTab:CreateToggle({
 					if part:IsA("BasePart") then
 						local billboard = Instance.new("BillboardGui")
 						billboard.Name = "ArtifactESP"
-						billboard.Size = UDim2.new(0, 100, 0, 30)
+						billboard.Size = UDim2.new(0, 80, 0, 20)
 						billboard.StudsOffset = Vector3.new(0, 2, 0)
 						billboard.AlwaysOnTop = true
 						billboard.Adornee = part
@@ -1020,7 +1020,7 @@ local Toggle = ESPTab:CreateToggle({
 							if not part:FindFirstChild(espName) then
 								local billboard = Instance.new("BillboardGui")
 								billboard.Name = espName
-								billboard.Size = UDim2.new(0, 100, 0, 30)
+								billboard.Size = UDim2.new(0, 80, 0, 20)
 								billboard.StudsOffset = Vector3.new(0, 2, 0)
 								billboard.AlwaysOnTop = true
 								billboard.Adornee = part
@@ -1089,7 +1089,7 @@ local Toggle3 = ESPTab:CreateToggle({
 										label.TextStrokeTransparency = 0.5
 										label.TextScaled = true
 										label.Font = Enum.Font.SourceSansBold
-										label.Text = planetName .. " Orb 🟢"
+										label.Text = planetName .. " Orb 🔮"
 										label.Parent = bb
 									end
 								else

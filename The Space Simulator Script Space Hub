@@ -1128,8 +1128,6 @@ local Toggle3 = ESPTab:CreateToggle({
 
 local toggleConnection4
 
-local toggleConnection4
-
 local Toggle4 = ESPTab:CreateToggle({
 	Name = "Metallic Hydrogen ESP",
 	CurrentValue = false,
@@ -1153,13 +1151,12 @@ local Toggle4 = ESPTab:CreateToggle({
 							if mhPart and mhPart:IsA("MeshPart") then
 								local hitpoints = mhPart:GetAttribute("hitpoints")
 
-								if typeof(hitpoints) == "number" then
+								if typeof(hitpoints) == "number" and hitpoints > 0 then
+									-- Only set to 1 if not already 1
 									if hitpoints ~= 1 then
 										mhPart:SetAttribute("hitpoints", 1)
 									end
-								end
 
-								if hitpoints and hitpoints > 0 then
 									if not mhPart:FindFirstChild("MHEsp") then
 										local bb = Instance.new("BillboardGui")
 										bb.Name = "MHEsp"
@@ -1212,7 +1209,7 @@ local Toggle4 = ESPTab:CreateToggle({
 local toggleConnection5
 
 local Toggle5 = ESPTab:CreateToggle({
-	Name = "Teleport Hydrogen Near",
+	Name = "Teleport to Hydrogen",
 	CurrentValue = false,
 	Flag = "Toggle5",
 	Callback = function(Value)
@@ -1238,7 +1235,8 @@ local Toggle5 = ESPTab:CreateToggle({
 								if typeof(hitpoints) == "number" and hitpoints > 0 then
 									local distance = (hydrogen.Position - hrp.Position).Magnitude
 									if distance <= 100 then
-										hydrogen.CFrame = CFrame.new(hrp.Position + Vector3.new(0, 0, 0))
+										hrp.CFrame = CFrame.new(hydrogen.Position + Vector3.new(0, 0, 0))
+										break -- optional: teleport to first one only
 									end
 								end
 							end

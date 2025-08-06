@@ -1569,28 +1569,23 @@ local Button = OtherTpTab:CreateButton({
 		local planetsFolder = workspace:FindFirstChild("Planets")
 		if not planetsFolder then return end
 
-		local availableOrbs = {}
+		for _, planetModel in pairs(planetsFolder:GetChildren()) do
+			if planetModel:IsA("Model") then
+				local minerals = planetModel:FindFirstChild("Minerals")
+				if minerals then
+					local orbName = planetModel.Name .. " Orb"
+					local orbPart = minerals:FindFirstChild(orbName)
 
-		for _, planet in pairs(planetsFolder:GetChildren()) do
-			local minerals = planet:FindFirstChild("Minerals")
-			if minerals then
-				for _, item in pairs(minerals:GetChildren()) do
-					if item:IsA("Model") and item.Name:lower():find("orb") then
-						local part = item.PrimaryPart or item:FindFirstChildWhichIsA("BasePart")
-						if part then
-							local dist = (hrp.Position - part.Position).Magnitude
-							if dist <= 200 then
-								table.insert(availableOrbs, part)
-							end
+					if orbPart and orbPart:IsA("BasePart") then
+						local distance = (hrp.Position - orbPart.Position).Magnitude
+						if distance <= 200 then
+							-- Teleport the player to orb (slightly above)
+							hrp.CFrame = orbPart.CFrame + Vector3.new(0, 0, 0)
+							return
 						end
 					end
 				end
 			end
-		end
-
-		-- Teleport to first valid orb found
-		if #availableOrbs > 0 then
-			hrp.CFrame = availableOrbs[1].CFrame + Vector3.new(0, 5, 0)
 		end
 	end,
 })

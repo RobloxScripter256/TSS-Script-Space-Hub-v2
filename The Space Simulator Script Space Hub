@@ -1317,7 +1317,7 @@ local Toggle7 = ESPTab:CreateToggle({
 		if not flaresFolder then return end
 
 		if Value then
-			toggleConnection7 = RunService.Heartbeat:Connect(function()
+			toggleConnection7 = RunService.Heartbeat:xConnect(function()
 				local meshParts = {}
 
 				for _, obj in pairs(flaresFolder:GetDescendants()) do
@@ -1598,6 +1598,50 @@ local Button = PlanetTpTab:CreateButton({
 	end,
 })
 
+local Button = PlanetTpTab:CreateButton({
+	Name = "Bring Corvette",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		-- Step 1: Initial teleport
+		hrp.CFrame = CFrame.new(-3197, 12, -1476)
+
+		-- Step 2: Fire all valid ProximityPrompts
+		task.delay(0.2, function()
+			local function searchAndFire(container)
+				for _, descendant in pairs(container:GetDescendants()) do
+					if descendant:IsA("ProximityPrompt") and descendant.Name == "PPrompt" then
+						local parent = descendant.Parent
+						if parent and parent.Name == "ButtonSpawn" then
+							local color = parent:IsA("BasePart") and parent.Color or Color3.new()
+							if color:ToHex() == Color3.fromRGB(13, 105, 172):ToHex() then
+								pcall(function()
+									fireproximityprompt(descendant)
+								end)
+							end
+						end
+					end
+				end
+			end
+
+			searchAndFire(workspace)
+			searchAndFire(game.ReplicatedStorage)
+
+			-- Step 3: Final teleport to one of the 3 fixed positions
+			task.delay(0.2, function()
+				local positions = {
+					Vector3.new(-3197, 19, -1487),
+					Vector3.new(-3197, 19, -1487),
+						Vector3.new(-3197, 19, -1487),
+				}
+				local randomPos = positions[math.random(1, #positions)]
+				hrp.CFrame = CFrame.new(randomPos)
+			end)
+		end)
+	end,
+})
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

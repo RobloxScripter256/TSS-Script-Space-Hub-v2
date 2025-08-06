@@ -1617,7 +1617,7 @@ local Button = PlanetTpTab:CreateButton({
 						if parent and parent:IsA("BasePart") and parent.Name == "ButtonSpawn" then
 							local color = parent.Color
 							local distance = (parent.Position - hrp.Position).Magnitude
-							if color:ToHex() == Color3.fromRGB(13, 105, 172):ToHex() and distance <= 49 then
+							if color:ToHex() == Color3.fromRGB(13, 105, 172):ToHex() and distance <= 8 then
 								pcall(function()
 									fireproximityprompt(descendant)
 								end)

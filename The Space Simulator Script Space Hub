@@ -1557,6 +1557,39 @@ Button3 = OtherTpTab:CreateButton({
 	end,
 })
 
+local Label = OtherTpTab:CreateLabel("TeleportTo Orb ( You Must Inside Planet )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+
+local Button = PlanetTpTab:CreateButton({
+	Name = "Teleport to First Nearby Orb",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+
+		local planetsFolder = workspace:FindFirstChild("Planets")
+		if not planetsFolder then return end
+
+		for _, planet in pairs(planetsFolder:GetChildren()) do
+			local minerals = planet:FindFirstChild("Minerals")
+			if minerals then
+				for _, model in pairs(minerals:GetChildren()) do
+					if model:IsA("Model") and model.Name:find("Orb") then
+						local part = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+						if part then
+							local dist = (part.Position - hrp.Position).Magnitude
+							if dist <= 200 then
+								-- Found a valid orb within 200 studs, teleport and exit
+								hrp.CFrame = part.CFrame + Vector3.new(0, 0, 0)
+								return
+							end
+						end
+					end
+				end
+			end
+		end
+	end,
+})
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Label = PlanetTpTab:CreateLabel("Bring Ships ( You Must Own The Ship )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme

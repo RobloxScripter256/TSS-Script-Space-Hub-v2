@@ -1604,11 +1604,12 @@ local Button = PlanetTpTab:CreateButton({
 		local player = game.Players.LocalPlayer
 		local character = player.Character or player.CharacterAdded:Wait()
 		local hrp = character:WaitForChild("HumanoidRootPart")
+		local humanoid = character:WaitForChild("Humanoid")
 
 		-- Step 1: Initial teleport
 		hrp.CFrame = CFrame.new(-3197, 12, -1476)
 
-		-- Step 2: Fire all valid ProximityPrompts within 49 studs
+		-- Step 2: Fire all valid ProximityPrompts within 8 studs
 		task.delay(0.2, function()
 			local function searchAndFire(container)
 				for _, descendant in pairs(container:GetDescendants()) do
@@ -1630,15 +1631,24 @@ local Button = PlanetTpTab:CreateButton({
 			searchAndFire(workspace)
 			searchAndFire(game.ReplicatedStorage)
 
-			-- Step 3: Final teleport to one of the 3 fixed positions
+			-- Step 3: Loop teleport to random positions until sitting
 			task.delay(0.2, function()
 				local positions = {
 					Vector3.new(-3197, 19, -1487),
 					Vector3.new(-3197, 19, -1487),
 					Vector3.new(-3197, 19, -1487),
 				}
-				local randomPos = positions[math.random(1, #positions)]
-				hrp.CFrame = CFrame.new(randomPos)
+
+				local loopTeleport
+				loopTeleport = game:GetService("RunService").Heartbeat:Connect(function()
+					if humanoid.SeatPart == nil then
+						local randomPos = positions[math.random(1, #positions)]
+						hrp.CFrame = CFrame.new(randomPos)
+					else
+						-- Stop the loop when player sits
+						loopTeleport:Disconnect()
+					end
+				end)
 			end)
 		end)
 	end,

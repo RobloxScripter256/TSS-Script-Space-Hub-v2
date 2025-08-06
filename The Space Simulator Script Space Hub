@@ -1559,7 +1559,7 @@ Button3 = OtherTpTab:CreateButton({
 
 local Label = OtherTpTab:CreateLabel("TeleportTo Orb ( You Must Inside Planet )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
-local Button = PlanetTpTab:CreateButton({
+local Button = OtherTpTab:CreateButton({
 	Name = "Teleport to First Nearby Orb",
 	Callback = function()
 		local player = game.Players.LocalPlayer

@@ -1557,7 +1557,7 @@ Button3 = OtherTpTab:CreateButton({
 	end,
 })
 
-local Label = OtherTpTab:CreateLabel("TeleportTo Orb ( You Must Inside Planet )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
+local Label = OtherTpTab:CreateLabel("Teleport To Orb ( You Must Inside Planet )", 4483362458, Color3.fromRGB(255, 205, 220), false) -- Title, Icon, Color, IgnoreTheme
 
 local Button = OtherTpTab:CreateButton({
 	Name = "Teleport to First Nearby Orb",
